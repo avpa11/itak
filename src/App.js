@@ -1,25 +1,29 @@
-import logo from './logo.svg';
+import React, { Component } from 'react';
+import { BrowserRouter, Route } from 'react-router-dom';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 
-function App() {
+// Components
+import Home from './components/Home';
+import New from './components/New';
+import JoinFriend from './components/JoinFriend';
+import Game from './components/Game';
+
+class App extends Component {
+
+  render(){
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <BrowserRouter>
+      <React.Fragment>  
+        <Route exact path='/' component={Home} />       
+        <Route exact path='/new' component={New} />       
+        <Route exact path='/join-friend' component={JoinFriend} />       
+        <Route exact path='/game' component={Game} />       
+      </React.Fragment>
+    </BrowserRouter> 
   );
+}
 }
 
 export default App;

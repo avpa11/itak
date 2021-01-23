@@ -1,0 +1,85 @@
+import React, { Component } from 'react';
+import { Link, withRouter } from 'react-router-dom';
+import { compose } from 'recompose';
+import { withFirebase } from './Firebase';
+
+//  Bootstrap components
+import Button from 'react-bootstrap/Button';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col'
+import FormControl from 'react-bootstrap/FormControl';
+import { Form } from 'react-bootstrap';
+
+const initState = {
+    userID: '',
+    gameID: ''
+}
+
+function makeid(length) {
+    var result           = '';
+    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+       result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+}
+
+class JoinFriend extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {...initState};
+    }
+
+    componentDidMount() {
+        this.setState({userID: makeid(4)});
+    }
+
+    handleSubmit = e => {
+        e.preventDefault();
+        this.props.history.push({
+            pathname: '/game',
+            previouspath: '/join-friend',
+            userID: this.state.userID,
+            gameID: this.state.gameID
+        });
+
+    }
+
+    handleChange = e => {
+        this.setState({ [e.target.name]: e.target.value });
+    };
+
+    render() {
+        const { gameID } = this.state;
+        return (
+            <React.Fragment>
+                <main className="text-center form-signin h-100">
+                    <h1>Join a Friend</h1>
+                    <Form onSubmit={e => this.handleSubmit(e)}>
+                        <Row>
+                            <Col md={12}>
+                                <Form.Label>Game Code</Form.Label>
+                                <FormControl type="text" value={gameID} onChange={this.handleChange} name="gameID" placeholder="Enter game code..."></FormControl>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col md={6}>
+                                <div className="buttonWrapper">
+                                    <Button  as={Link} to="/" className="buttonStyle">Back</Button>
+                                </div>
+                            </Col>
+                            <Col md={6}>
+                                <div className="buttonWrapper">
+                                    <Button type="submit" className="buttonStyle">Continue</Button>
+                                </div>
+                            </Col>
+                        </Row>
+                    </Form>
+                </main>
+            </React.Fragment>
+        )
+    }
+}
+
+export default compose(withFirebase, withRouter)(JoinFriend);
