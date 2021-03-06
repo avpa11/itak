@@ -13,13 +13,13 @@ class Home extends Component {
         return (
             <React.Fragment>
                 <main className="text-center form-signin h-100">
-                    <h1>i-Tak</h1>
+                    <h1>Welcome to iTak</h1>
                     <Row style={{padding: '15px'}}></Row>
-                    <Button as={Link} to="/new">New Game</Button>
+                    <Button variant="warning" as={Link} to="/new">New Game</Button>
                     <Row style={{padding: '15px'}}></Row>
-                    <Button as={Link} to="/join-friend">Join Friend's Game</Button>
+                    <Button variant="warning" as={Link} to="/join-friend">Join Friend's Game</Button>
                     <Row style={{padding: '15px'}}></Row>
-                    <Button>Join Random Game</Button>
+                    <Button variant="warning">Join Random Game</Button>
                 </main>
             </React.Fragment>
         )

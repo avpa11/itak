@@ -9,6 +9,8 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Spinner from 'react-bootstrap/Spinner'
 import Board from './Board';
+import Modal from 'react-bootstrap/Modal';
+import Button from 'react-bootstrap/Button';
 
 const initState = {
     gameID: '',
@@ -57,6 +59,8 @@ const initState = {
     boardSquare14: '',
     boardSquare15: '',
     squaresValues: [],
+    showModal: false,
+    modalText: '',
     zero: [],
     one: [],
     two: [],
@@ -268,6 +272,9 @@ class Game extends Component {
                         });
                     })
 
+                    console.log('ownerID: ' + window.sessionStorage.getItem('ownerID'));
+                    console.log('userID: ' + window.sessionStorage.getItem('userID'));
+                    console.log('turn: ' + currentComponent.state.turn);
                     // check if game exist in firestore
                     if (currentComponent.state.gameID === '' || currentComponent.state.gameID === null) {
                         document.getElementById('spinner').remove();
@@ -359,8 +366,9 @@ class Game extends Component {
             }
 
             // friend just joined the game
-            if (window.sessionStorage.getItem('previouspath') !== null && window.sessionStorage.getItem('previouspath')=== '/join-friend'
-            && currentComponent.state.gameStarted === false) {
+            // if (window.sessionStorage.getItem('previouspath') !== null && window.sessionStorage.getItem('previouspath')=== '/join-friend'
+            // && currentComponent.state.gameStarted === false) {
+            if (window.sessionStorage.getItem('previouspath') !== null && window.sessionStorage.getItem('previouspath')=== '/join-friend') {
                 this.props.firebase.gameRoom().where('gameID', '==', window.sessionStorage.getItem('gameID'))
                 .get()
                 .then(function(querySnapshot) {
@@ -472,14 +480,18 @@ class Game extends Component {
             currentComponent.checkForPattern(boardSquareIDs);
         }
         // tie
-        // if (this.state.boardSquare0 !== '' && this.state.boardSquare1 !== '' && this.state.boardSquare2 !== '' && this.state.boardSquare3 &&
-        // this.state.boardSquare4 !== '' && this.state.boardSquare5 !== '' && this.state.boardSquare6 !== '' && this.state.boardSquare7 && 
-        // this.state.boardSquare8 !== '' && this.state.boardSquare9 !== '' && this.state.boardSquare10 !== '' && this.state.boardSquare11 && 
-        // this.state.boardSquare12 !== '' && this.state.boardSquare13 !== '' && this.state.boardSquare14 !== '' && this.state.boardSquare15) {
-        //     let boardSquareIDs = ['boardSquare0', 'boardSquare1', 'boardSquare2', 'boardSquare3', 'boardSquare4',
-        //     'boardSquare5', 'boardSquare6', 'boardSquare7', 'boardSquare8', 'boardSquare9', 'boardSquare10',
-        //     'boardSquare11', 'boardSquare12', 'boardSquare13', 'boardSquare14', 'boardSquare15'];
-        // }
+        if (this.state.boardSquare0 !== '' && this.state.boardSquare1 !== '' && this.state.boardSquare2 !== '' && this.state.boardSquare3 &&
+        this.state.boardSquare4 !== '' && this.state.boardSquare5 !== '' && this.state.boardSquare6 !== '' && this.state.boardSquare7 && 
+        this.state.boardSquare8 !== '' && this.state.boardSquare9 !== '' && this.state.boardSquare10 !== '' && this.state.boardSquare11 && 
+        this.state.boardSquare12 !== '' && this.state.boardSquare13 !== '' && this.state.boardSquare14 !== '' && this.state.boardSquare15) {
+            // let boardSquareIDs = ['boardSquare0', 'boardSquare1', 'boardSquare2', 'boardSquare3', 'boardSquare4',
+            // 'boardSquare5', 'boardSquare6', 'boardSquare7', 'boardSquare8', 'boardSquare9', 'boardSquare10',
+            // 'boardSquare11', 'boardSquare12', 'boardSquare13', 'boardSquare14', 'boardSquare15'];
+            let strText = '';
+            strText = 'It\'s a tie!';
+            currentComponent.handleShowModal(strText);
+
+        }
     }
 
     checkForPattern(boardSquareIDs) {
@@ -499,14 +511,16 @@ class Game extends Component {
                                 if (currentComponent.state.squaresValues.length === 4) {
                                     bWinning = isWinningPattern(currentComponent.state.squaresValues[0], currentComponent.state.squaresValues[1], currentComponent.state.squaresValues[2], currentComponent.state.squaresValues[3]);
                                     if (bWinning) {
+                                        let strText;
                                         if ((window.sessionStorage.getItem('ownerID') !== null && currentComponent.state.turn === 'owner') ||
                                         (window.sessionStorage.getItem('userID') !== null && currentComponent.state.turn === 'user')) {
-                                            alert("You win!");
                                             console.log("You win!");
+                                            strText = 'You win!';
                                         } else {
-                                            alert("You lose!");
                                             console.log("You lose!");
+                                            strText = 'You lose!';
                                         }
+                                        currentComponent.handleShowModal(strText);
                                     }
                                 }
                                 this._isMounted = false;
@@ -565,16 +579,30 @@ class Game extends Component {
         }
     }
 
+    handleCloseModal = () => {
+        // this.setState({ showModal: false });
+        localStorage.clear();
+        this.props.history.push({
+            pathname: '/',
+        });
+    }
+    handleShowModal(strText) {
+        this.setState({ 
+            showModal: true,
+            modalText: strText
+        });
+    }
+
     render() {
         const { gameID, gameStarted, history, chip1, chip2, chip3, chip4, chip5, chip6, chip7, chip8, chip9,
-        chip10, chip11, chip12, chip13, chip14, chip15, chip16, actionText } = this.state;
+        chip10, chip11, chip12, chip13, chip14, chip15, chip16, actionText, showModal, modalText } = this.state;
         const current = history[this.state.stepNumber];
         return (
             <React.Fragment>
                 <Container className="h-100" id="gameContainer">
                     <Row className="h-100">
                         <Col md="5">
-                            <h1>i-Tak game</h1>
+                            <h1>iTak game</h1>
                             <React.Fragment>
                                 <h2>Game ID: {gameID}</h2>
                             </React.Fragment>
@@ -738,6 +766,28 @@ class Game extends Component {
                         </Col>
                     </Row>
                 </Container>
+
+                <React.Fragment>
+                    <Modal
+                        show={showModal}
+                        onHide={this.handleCloseModal}
+                        backdrop="static"
+                        keyboard={false}
+                        centered
+                    >
+                        <Modal.Header closeButton>
+                        <Modal.Title>Modal title</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                            <p>{modalText}</p>
+                        </Modal.Body>
+                        <Modal.Footer>
+                        <Button variant="warning" onClick={this.handleCloseModal}>
+                            Finish
+                        </Button>
+                        </Modal.Footer>
+                    </Modal>
+                </React.Fragment>
             </React.Fragment>
         )
     }
