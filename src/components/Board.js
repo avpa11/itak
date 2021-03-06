@@ -3,9 +3,8 @@ import Square from './Square';
 
 export default class Board extends Component {
     renderSquare(i) {
-        console.log(i);
-        return <Square value={this.props.squares[i]} id={i}
-        onClick={()=>this.props.onClick} />
+        return <Square value={this.props.squares[i]} id={'boardSquare' + i}
+        onClick={()=>this.props.onClick(i)} />
     }
 
     render() {

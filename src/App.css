@@ -76,12 +76,40 @@
   display: table;
 }
 
-.game {
+.game, .chips {
   position: absolute;
   top: 25%;
-
   display: flex;
   flex-direction: row;
+  padding-bottom: 10px;
+}
+
+.chip {
+  border: none;
+  background-color: transparent;
+  width: 100px;
+  height: 120px;
+}
+
+.chipImg {
+  width: 100% !important;
+ }
+
+ .chipImg.small {
+  width: 65% !important;
+ }
+
+ .pendChoice {
+   border: 1px solid green;
+ }
+
+ .pendDecision {
+   border: 1px solid red;
+ }
+
+ .chip:focus {
+  outline: none;
+  box-shadow: none;
 }
 
 @media (max-width: 991px)  {
@@ -89,8 +117,25 @@
     top: 0;
   }
 
+  .chips {
+    top: 41%
+  }
+
   .square {
     width: 70px;
     height: 70px;
+  }
+
+  .chip {
+    width: 30px;
+    height: 30px;
+  }
+
+  .chipImg {
+   width: 120% !important;
+  }
+
+  .chipImg.small {
+   width: 95% !important;
   }
 }

@@ -42,6 +42,7 @@ class Firebase {
     }
 
     gameRoom = () => this.firestore.collection('gameRoom');        
+    chips = () => this.firestore.collection('chips');        
 }
 
 export default Firebase;
