@@ -88,25 +88,29 @@ function isWinningPattern(array1, array2, array3, array4) {
         }
 
 
-        if (array1[0] === array2[0] && array1[0] === array3[0] && array1[0] === array4[0]
-        && array2[0] === array3[0] && array3[0] === array4[0]) {
-            winningInZero = true;
-        }
-        if (array1[1] === array2[1] && array1[1] === array3[1] && array1[1] === array4[1]
-        && array2[1] === array3[1] && array3[1] === array4[1]) {
-            winningInOne = true;
-        }
-        if (array1[2] === array2[2] && array1[2] === array3[2] && array1[2] === array4[2]
-        && array2[2] === array3[2] && array3[2] === array4[2]) {
-            winningInTwo = true;
-        }
-        if (array1[3] === array2[3] && array1[3] === array3[3] && array1[3] === array4[3]
-        && array2[3] === array3[3] && array3[3] === array4[3]) {
-            winningInThree = true;
+        if (array1[0] !== undefined && array2[0] !== undefined  && array3[0] !== undefined && array4[0] !== undefined) {
+            if (array1[0] === array2[0] && array1[0] === array3[0] && array1[0] === array4[0]
+            && array2[0] === array3[0] && array3[0] === array4[0]) {
+                winningInZero = true;
+            }
+            if (array1[1] === array2[1] && array1[1] === array3[1] && array1[1] === array4[1]
+                && array2[1] === array3[1] && array3[1] === array4[1]) {
+                winningInOne = true;
+            }
+            if (array1[2] === array2[2] && array1[2] === array3[2] && array1[2] === array4[2]
+                && array2[2] === array3[2] && array3[2] === array4[2]) {
+                winningInTwo = true;
+            }
+            if (array1[3] === array2[3] && array1[3] === array3[3] && array1[3] === array4[3]
+                && array2[3] === array3[3] && array3[3] === array4[3]) {
+                winningInThree = true;
+            }
+        } else {
+            return false;
         }
     }
 
-    if (winningInZero || winningInOne || winningInTwo || winningInThree) {
+    if (winningInZero === true || winningInOne === true || winningInTwo === true || winningInThree === true) {
         return true;
     } else {
         return false;
@@ -272,18 +276,17 @@ class Game extends Component {
                         });
                     })
 
-                    console.log('ownerID: ' + window.sessionStorage.getItem('ownerID'));
-                    console.log('userID: ' + window.sessionStorage.getItem('userID'));
-                    console.log('turn: ' + currentComponent.state.turn);
                     // check if game exist in firestore
                     if (currentComponent.state.gameID === '' || currentComponent.state.gameID === null) {
-                        document.getElementById('spinner').remove();
-                        document.getElementById('spinnerText').innerText = 'Game with an entered game id does not exist';
+                        if (document.getElementById('spinner') !== null && document.getElementById('spinner') !== 'undefined') {
+                            document.getElementById('spinner').remove();
+                            document.getElementById('spinnerText').innerText = 'Game with an entered game id does not exist';
+                        }
                     } else {
                         if (currentComponent.state.stage === "pick") {
                             if ((window.sessionStorage.getItem('ownerID') !== null && currentComponent.state.turn === 'owner') ||
                             (window.sessionStorage.getItem('userID') !== null && currentComponent.state.turn === 'user')) {
-                                currentComponent.setState({actionText: 'Choose figure for your opponent'})
+                                currentComponent.setState({actionText: 'Choose a figure for your opponent'})
                             } else {
                                 currentComponent.setState({actionText: 'Your opponent\'s turn'})
                             }
@@ -581,7 +584,7 @@ class Game extends Component {
 
     handleCloseModal = () => {
         // this.setState({ showModal: false });
-        localStorage.clear();
+        window.sessionStorage.clear();
         this.props.history.push({
             pathname: '/',
         });
