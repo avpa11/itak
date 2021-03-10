@@ -136,7 +136,7 @@ button, .btn {
     -moz-transform: translate( -25%, -25%) scale3d(0.5, 0.5, 1); /* FF3.5+ */
      -ms-transform: translate( -25%, -25%) scale3d(0.5, 0.5, 1); /* IE9 */
       -o-transform: translate( -25%, -25%) scale3d(0.5, 0.5, 1); /* Opera 10.5+ */
-    transform: translate( -25%, -25%) scale3d(0.5, 0.5, 1);
+    transform: translate( -23%, -27%) scale3d(0.5, 0.5, 1);
             /* IE6–IE9 */
             filter: progid:DXImageTransform.Microsoft.Matrix(M11=0.9999619230641713, M12=-0.008726535498373935, M21=0.008726535498373935, M22=0.9999619230641713,SizingMethod='auto expand');
   }

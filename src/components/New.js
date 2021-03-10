@@ -64,7 +64,7 @@ class Home extends Component {
     }
 
     render() {
-        const { gameID } = this.state;
+        // const { gameID } = this.state;
         return (
             <React.Fragment>
                 <main className="text-center form-signin h-100">
@@ -85,7 +85,7 @@ class Home extends Component {
                             </Col> */}
                             <Col md={12}>
                                 <input onChange={this.handleChange} type="checkbox" name="openGame" style={{marginRight:  '10px'}} />
-                                <Form.Label>  Public Game: </Form.Label>
+                                <Form.Label>  Public Game </Form.Label>
                             </Col>
                         </Row>
                         <Row className="formRow">
