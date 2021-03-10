@@ -284,6 +284,413 @@ class Game extends Component {
         })
     }
 
+    getUpdate() {
+        let currentComponent = this;
+        currentComponent.props.firebase.gameRoom().where('gameID', '==', window.sessionStorage.getItem('gameID'))
+        .onSnapshot((querySnapshot) => {
+            if (!querySnapshot.empty) {
+                querySnapshot.forEach((doc) => {
+                    currentComponent.setState({
+                        gameID: doc.data().gameID,
+                        openGame: doc.data().openGame,
+                        ownerID: doc.data().ownerID,
+                        gameStarted: doc.data().gameStarted,
+                        timestamp: doc.data().timestamp,
+                        userID: doc.data().userID !== undefined ? doc.data().userID : '',
+                        step: doc.data().step !== undefined ?  doc.data().step  : '',
+                        stage: doc.data().stage !== undefined ?  doc.data().stage  : '',
+                        turn: doc.data().turn !== undefined ?  doc.data().turn  : '',
+                        chip1: doc.data().chip1 !== undefined ? doc.data().chip1 : '',
+                        chip2: doc.data().chip2 !== undefined ?  doc.data().chip2  : '',
+                        chip3: doc.data().chip3 !== undefined ?  doc.data().chip3  : '',
+                        chip4: doc.data().chip4 !== undefined ?  doc.data().chip4  : '',
+                        chip5: doc.data().chip5 !== undefined ?  doc.data().chip5  : '',
+                        chip6: doc.data().chip6 !== undefined ?  doc.data().chip6  : '',
+                        chip7: doc.data().chip7 !== undefined ?  doc.data().chip7  : '',
+                        chip8: doc.data().chip8 !== undefined ?  doc.data().chip8  : '',
+                        chip9: doc.data().chip9 !== undefined ?  doc.data().chip9  : '',
+                        chip10: doc.data().chip10 !== undefined ?  doc.data().chip10  : '',
+                        chip11: doc.data().chip11 !== undefined ?  doc.data().chip11  : '',
+                        chip12: doc.data().chip12 !== undefined ?  doc.data().chip12  : '',
+                        chip13: doc.data().chip13 !== undefined ?  doc.data().chip13  : '',
+                        chip14: doc.data().chip14 !== undefined ?  doc.data().chip14  : '',
+                        chip15: doc.data().chip15 !== undefined ?  doc.data().chip15  : '',
+                        chip16: doc.data().chip16 !== undefined ?  doc.data().chip16  : '',
+                        boardSquare0: doc.data().boardSquare0 !== undefined ? doc.data().boardSquare0 : '',
+                        boardSquare1: doc.data().boardSquare1 !== undefined ? doc.data().boardSquare1 : '',
+                        boardSquare2: doc.data().boardSquare2 !== undefined ? doc.data().boardSquare2 : '',
+                        boardSquare3: doc.data().boardSquare3 !== undefined ? doc.data().boardSquare3 : '',
+                        boardSquare4: doc.data().boardSquare4 !== undefined ? doc.data().boardSquare4 : '',
+                        boardSquare5: doc.data().boardSquare5 !== undefined ? doc.data().boardSquare5 : '',
+                        boardSquare6: doc.data().boardSquare6 !== undefined ? doc.data().boardSquare6 : '',
+                        boardSquare7: doc.data().boardSquare7 !== undefined ? doc.data().boardSquare7 : '',
+                        boardSquare8: doc.data().boardSquare8 !== undefined ? doc.data().boardSquare8 : '',
+                        boardSquare9: doc.data().boardSquare9 !== undefined ? doc.data().boardSquare9 : '',
+                        boardSquare10: doc.data().boardSquare10 !== undefined ? doc.data().boardSquare10 : '',
+                        boardSquare11: doc.data().boardSquare11 !== undefined ? doc.data().boardSquare11 : '',
+                        boardSquare12: doc.data().boardSquare12 !== undefined ? doc.data().boardSquare12 : '',
+                        boardSquare13: doc.data().boardSquare13 !== undefined ? doc.data().boardSquare13 : '',
+                        boardSquare14: doc.data().boardSquare14 !== undefined ? doc.data().boardSquare14 : '',
+                        boardSquare15: doc.data().boardSquare15 !== undefined ? doc.data().boardSquare15 : '',
+                        gameFinished: doc.data().gameFinished !== undefined ? doc.data().gameFinished : false,
+                        docID: doc.id
+                    });
+                })
+            } else {
+                currentComponent.handleShowModal('Game with such ID does not exist');
+            }
+
+
+            // check if game exist in firestore
+            if (currentComponent.state.gameID === '' || currentComponent.state.gameID === null) {
+                if (document.getElementById('spinner') !== null && document.getElementById('spinner') !== 'undefined') {
+                    document.getElementById('spinner').remove();
+                    document.getElementById('spinnerText').innerText = 'Game with an entered game id does not exist';
+                    currentComponent.handleShowModal('Game with an entered game id does not exist');
+                }
+            } else {
+                if (currentComponent.state.stage === "pick") {
+                    if ((window.sessionStorage.getItem('ownerID') !== null && currentComponent.state.turn === 'owner') ||
+                    (window.sessionStorage.getItem('userID') !== null && currentComponent.state.turn === 'user')) {
+                        currentComponent.setState({
+                            actionText: 'Choose a figure for your opponent',
+                            turnSpan: 'Your turn!',
+                            turnSpanClass: 'yourT'
+                        })
+                        if (document.getElementById('turnSpan') !== null && document.getElementById('turnSpan') !== 'undefined') {
+                            document.getElementById('turnSpan').style.background = '#7EDF9B';
+                        }
+                    } else {
+                        currentComponent.setState({
+                            actionText: 'Your opponent\'s turn',
+                            turnSpan: 'Wait!',
+                            turnSpanClass: 'opponentT'
+                        })
+                    }
+                } else {
+                    if ((window.sessionStorage.getItem('ownerID') !== null && currentComponent.state.turn === 'owner') ||
+                    (window.sessionStorage.getItem('userID') !== null && currentComponent.state.turn === 'user')) {
+                        currentComponent.setState({
+                            actionText: 'Choose where to place the highlighted figure!',
+                            turnSpan: 'Your turn!',
+                            turnSpanClass: 'yourT'
+                        })
+                    } else {
+                        currentComponent.setState({
+                            actionText: 'Your opponent\'s turn',
+                            turnSpan: 'Wait!',
+                            turnSpanClass: 'opponentT'
+                        })                            }
+                }
+
+                let chipID = '';
+                let boardSquareIDs = ['boardSquare0', 'boardSquare1', 'boardSquare2', 'boardSquare3', 'boardSquare4',
+                'boardSquare5', 'boardSquare6', 'boardSquare7', 'boardSquare8', 'boardSquare9', 'boardSquare10',
+                'boardSquare11', 'boardSquare12', 'boardSquare13', 'boardSquare14', 'boardSquare15'];
+                let i;
+                let x;
+                const history = currentComponent.state.history.slice(0, currentComponent.state.stepNumber + 1);
+                const current = history[history.length - 1];
+                const squares = current.squares.slice();
+
+                Object.keys(currentComponent.state).forEach(function(key, index) {
+                    if (index < 16) {
+                        i = index + 1;
+                        chipID = 'chip' + i;
+                        if (document.getElementById(chipID) !== null) {
+                            document.getElementById(chipID).classList.remove("pendChoice");
+                            document.getElementById(chipID).classList.remove("pendDecision");
+                        }
+                    }
+
+                    if (boardSquareIDs.includes(key)) {
+                        if (currentComponent.state[key] !== '' && document.getElementById(key) !== null) {
+                            document.getElementById(key).classList.add("reserved");
+                            let chipRef = currentComponent.props.firebase.firestore.collection('chips').doc(currentComponent.state[key]);
+                            chipRef.get().then((doc) => {
+                                if (doc.exists) {
+                                    // boardSquare0 state is 29th state element...
+                                    x = index - 29;
+                                    squares[x] = <img src={doc.data().img_src} alt="Figure img" className="squareImage" style={{width: 'fit-content'}} />;
+                                    currentComponent.setState({
+                                        history: history.concat({
+                                            squares: squares
+                                        }),
+                                        stepNumber: history.length
+                                    });
+                                } else {
+                                    // doc.data() will be undefined in this case
+                                    console.log("No such document!");
+                                }
+                            }).catch((error) => {
+                                console.log("Error getting document:", error);
+                            });
+                        }
+                    }
+
+                    if (currentComponent.state[key] === 'pend') {
+                        if ((currentComponent.state.turn === 'user' && window.sessionStorage.getItem('ownerID') !== null  && currentComponent.state.stage === 'put') ||
+                        (currentComponent.state.turn === 'owner' && window.sessionStorage.getItem('userID') !== null  && currentComponent.state.stage === 'put')) {
+                            document.getElementById(key).classList.add("pendChoice");
+                        } else if ((currentComponent.state.turn === 'owner' && window.sessionStorage.getItem('ownerID') !== null  && currentComponent.state.stage === 'put') ||
+                        (currentComponent.state.turn === 'user' && window.sessionStorage.getItem('userID') !== null  && currentComponent.state.stage === 'put')) {
+                            document.getElementById(key).classList.add("pendDecision");
+                        }
+                        currentComponent.setState({activeChip: key});
+                    } 
+                });
+
+                // if (currentComponent.state.gameStarted === true) {
+                //     window.sessionStorage.setItem('gameStarted', currentComponent.state.gameStarted);
+                // }
+
+                let tempArray = [];
+                // horizontal win
+                if (this.state.boardSquare0 !== '' && this.state.boardSquare1 !== '' && this.state.boardSquare2 !== '' && this.state.boardSquare3
+                && this.state.gameFinished === false) {
+                    tempArray = [];
+                    tempArray.push(chips(currentComponent.state.boardSquare0));
+                    tempArray.push(chips(currentComponent.state.boardSquare1));
+                    tempArray.push(chips(currentComponent.state.boardSquare2));
+                    tempArray.push(chips(currentComponent.state.boardSquare3));
+
+                    if (tempArray.length === 4) {
+                        this.checkForWin(tempArray);
+                    }
+                }
+                if (this.state.boardSquare4 !== '' && this.state.boardSquare5 !== '' && this.state.boardSquare6 !== '' && this.state.boardSquare7 !== ''
+                && this.state.gameFinished === false) {         
+                    tempArray = [];       
+                    tempArray.push(chips(currentComponent.state.boardSquare4));
+                    tempArray.push(chips(currentComponent.state.boardSquare5));
+                    tempArray.push(chips(currentComponent.state.boardSquare6));
+                    tempArray.push(chips(currentComponent.state.boardSquare7));
+
+                    if (tempArray.length === 4) {
+                        this.checkForWin(tempArray);
+                    }
+                }
+                if (this.state.boardSquare8 !== '' && this.state.boardSquare9 !== '' && this.state.boardSquare10 !== '' && this.state.boardSquare11 !== '' 
+                && this.state.gameFinished === false) {
+                    tempArray = [];
+                    tempArray.push(chips(currentComponent.state.boardSquare8));
+                    tempArray.push(chips(currentComponent.state.boardSquare9));
+                    tempArray.push(chips(currentComponent.state.boardSquare10));
+                    tempArray.push(chips(currentComponent.state.boardSquare11));
+
+                    if (tempArray.length === 4) {
+                        this.checkForWin(tempArray);
+                    }
+                }
+                if (this.state.boardSquare12 !== '' && this.state.boardSquare13 !== '' && this.state.boardSquare14 !== '' && this.state.boardSquare15 !== ''
+                && this.state.gameFinished === false) {
+                    tempArray = [];
+                    tempArray.push(chips(currentComponent.state.boardSquare12));
+                    tempArray.push(chips(currentComponent.state.boardSquare13));
+                    tempArray.push(chips(currentComponent.state.boardSquare14));
+                    tempArray.push(chips(currentComponent.state.boardSquare15));
+
+                    if (tempArray.length === 4) {
+                        this.checkForWin(tempArray);
+                    }
+                }
+                // vertical win
+                if (this.state.boardSquare0 !== '' && this.state.boardSquare4 !== '' && this.state.boardSquare8 !== '' && this.state.boardSquare12
+                && this.state.gameFinished === false) {
+                    tempArray = [];
+                    tempArray.push(chips(currentComponent.state.boardSquare0));
+                    tempArray.push(chips(currentComponent.state.boardSquare4));
+                    tempArray.push(chips(currentComponent.state.boardSquare8));
+                    tempArray.push(chips(currentComponent.state.boardSquare12));
+
+                    if (tempArray.length === 4) {
+                        this.checkForWin(tempArray);
+                    }
+                }
+                if (this.state.boardSquare1 !== '' && this.state.boardSquare5 !== '' && this.state.boardSquare9 !== '' && this.state.boardSquare13 !== ''
+                && this.state.gameFinished === false) {
+                    tempArray = [];
+                    tempArray.push(chips(currentComponent.state.boardSquare1));
+                    tempArray.push(chips(currentComponent.state.boardSquare5));
+                    tempArray.push(chips(currentComponent.state.boardSquare9));
+                    tempArray.push(chips(currentComponent.state.boardSquare13));
+
+                    if (tempArray.length === 4) {
+                        this.checkForWin(tempArray);
+                    }
+                }
+                if (this.state.boardSquare2 !== '' && this.state.boardSquare6 !== '' && this.state.boardSquare10 !== '' && this.state.boardSquare14 !== '' 
+                && this.state.gameFinished === false) {
+                    tempArray = [];
+                    tempArray.push(chips(currentComponent.state.boardSquare2));
+                    tempArray.push(chips(currentComponent.state.boardSquare6));
+                    tempArray.push(chips(currentComponent.state.boardSquare10));
+                    tempArray.push(chips(currentComponent.state.boardSquare14));
+
+                    if (tempArray.length === 4) {
+                        this.checkForWin(tempArray);
+                    }
+                }
+                if (this.state.boardSquare3 !== '' && this.state.boardSquare7 !== '' && this.state.boardSquare11 !== '' && this.state.boardSquare15 !== '' 
+                && this.state.gameFinished === false) {
+                    tempArray = [];
+                    tempArray.push(chips(currentComponent.state.boardSquare3));
+                    tempArray.push(chips(currentComponent.state.boardSquare7));
+                    tempArray.push(chips(currentComponent.state.boardSquare11));
+                    tempArray.push(chips(currentComponent.state.boardSquare15));
+
+                    if (tempArray.length === 4) {
+                        this.checkForWin(tempArray);
+                    }
+                }
+                // diagonal win
+                if (this.state.boardSquare0 !== '' && this.state.boardSquare5 !== '' && this.state.boardSquare10 !== '' && this.state.boardSquare15
+                && this.state.gameFinished === false) {
+                    tempArray = [];
+                    tempArray.push(chips(currentComponent.state.boardSquare0));
+                    tempArray.push(chips(currentComponent.state.boardSquare5));
+                    tempArray.push(chips(currentComponent.state.boardSquare10));
+                    tempArray.push(chips(currentComponent.state.boardSquare15));
+
+                    if (tempArray.length === 4) {
+                        this.checkForWin(tempArray);
+                    }
+                }
+                if (this.state.boardSquare3 !== '' && this.state.boardSquare6 !== '' && this.state.boardSquare9 !== '' && this.state.boardSquare12 !== ''
+                && this.state.gameFinished === false) {
+                    tempArray = [];
+                    tempArray.push(chips(currentComponent.state.boardSquare3));
+                    tempArray.push(chips(currentComponent.state.boardSquare6));
+                    tempArray.push(chips(currentComponent.state.boardSquare9));
+                    tempArray.push(chips(currentComponent.state.boardSquare12));
+
+                    if (tempArray.length === 4) {
+                        this.checkForWin(tempArray);
+                    }
+                }
+                // rectangular win
+                if (this.state.boardSquare0 !== '' && this.state.boardSquare1 !== '' && this.state.boardSquare4 !== '' && this.state.boardSquare5 !== ''
+                && this.state.gameFinished === false) {
+                    tempArray = [];
+                    tempArray.push(chips(currentComponent.state.boardSquare0));
+                    tempArray.push(chips(currentComponent.state.boardSquare1));
+                    tempArray.push(chips(currentComponent.state.boardSquare4));
+                    tempArray.push(chips(currentComponent.state.boardSquare5));
+
+                    if (tempArray.length === 4) {
+                        this.checkForWin(tempArray);
+                    }
+                }
+                if (this.state.boardSquare1 !== '' && this.state.boardSquare2 !== '' && this.state.boardSquare5 !== '' && this.state.boardSquare6 !== ''
+                && this.state.gameFinished === false) {
+                    tempArray = [];
+                    tempArray.push(chips(currentComponent.state.boardSquare1));
+                    tempArray.push(chips(currentComponent.state.boardSquare2));
+                    tempArray.push(chips(currentComponent.state.boardSquare5));
+                    tempArray.push(chips(currentComponent.state.boardSquare6));
+
+                    if (tempArray.length === 4) {
+                        this.checkForWin(tempArray);
+                    }
+                }
+                if (this.state.boardSquare2 !== '' && this.state.boardSquare3 !== '' && this.state.boardSquare6 !== '' && this.state.boardSquare7 !== ''
+                && this.state.gameFinished === false) {
+                    tempArray = [];
+                    tempArray.push(chips(currentComponent.state.boardSquare2));
+                    tempArray.push(chips(currentComponent.state.boardSquare3));
+                    tempArray.push(chips(currentComponent.state.boardSquare6));
+                    tempArray.push(chips(currentComponent.state.boardSquare7));
+
+                    if (tempArray.length === 4) {
+                        this.checkForWin(tempArray);
+                    }
+                }
+                if (this.state.boardSquare4 !== '' && this.state.boardSquare5 !== '' && this.state.boardSquare8 !== '' && this.state.boardSquare9 !== ''
+                && this.state.gameFinished === false) {
+                    tempArray = [];
+                    tempArray.push(chips(currentComponent.state.boardSquare4));
+                    tempArray.push(chips(currentComponent.state.boardSquare5));
+                    tempArray.push(chips(currentComponent.state.boardSquare8));
+                    tempArray.push(chips(currentComponent.state.boardSquare9));
+
+                    if (tempArray.length === 4) {
+                        this.checkForWin(tempArray);
+                    }
+                }
+                if (this.state.boardSquare5 !== '' && this.state.boardSquare6 !== '' && this.state.boardSquare9 !== '' && this.state.boardSquare10 !== ''
+                && this.state.gameFinished === false) {
+                    tempArray = [];
+                    tempArray.push(chips(currentComponent.state.boardSquare5));
+                    tempArray.push(chips(currentComponent.state.boardSquare6));
+                    tempArray.push(chips(currentComponent.state.boardSquare9));
+                    tempArray.push(chips(currentComponent.state.boardSquare10));
+
+                    if (tempArray.length === 4) {
+                        this.checkForWin(tempArray);
+                    }
+                }
+                if (this.state.boardSquare6 !== '' && this.state.boardSquare7 !== '' && this.state.boardSquare10 !== '' && this.state.boardSquare11 !== ''
+                && this.state.gameFinished === false) {
+                    tempArray = [];
+                    tempArray.push(chips(currentComponent.state.boardSquare6));
+                    tempArray.push(chips(currentComponent.state.boardSquare7));
+                    tempArray.push(chips(currentComponent.state.boardSquare10));
+                    tempArray.push(chips(currentComponent.state.boardSquare11));
+
+                    if (tempArray.length === 4) {
+                        this.checkForWin(tempArray);
+                    }
+                }
+                if (this.state.boardSquare8 !== '' && this.state.boardSquare9 !== '' && this.state.boardSquare12 !== '' && this.state.boardSquare13 !== ''
+                && this.state.gameFinished === false) {
+                    tempArray = [];
+                    tempArray.push(chips(currentComponent.state.boardSquare8));
+                    tempArray.push(chips(currentComponent.state.boardSquare9));
+                    tempArray.push(chips(currentComponent.state.boardSquare12));
+                    tempArray.push(chips(currentComponent.state.boardSquare13));
+
+                    if (tempArray.length === 4) {
+                        this.checkForWin(tempArray);
+                    }
+                }
+                if (this.state.boardSquare9 !== '' && this.state.boardSquare10 !== '' && this.state.boardSquare13 !== '' && this.state.boardSquare14 !== ''
+                && this.state.gameFinished === false) {
+                    tempArray = [];
+                    tempArray.push(chips(currentComponent.state.boardSquare9));
+                    tempArray.push(chips(currentComponent.state.boardSquare10));
+                    tempArray.push(chips(currentComponent.state.boardSquare13));
+                    tempArray.push(chips(currentComponent.state.boardSquare14));
+
+                    if (tempArray.length === 4) {
+                        this.checkForWin(tempArray);
+                    }
+                }
+                if (this.state.boardSquare10 !== '' && this.state.boardSquare11 !== '' && this.state.boardSquare14 !== '' && this.state.boardSquare15 !== ''
+                && this.state.gameFinished === false) {
+                    tempArray = [];
+                    tempArray.push(chips(currentComponent.state.boardSquare10));
+                    tempArray.push(chips(currentComponent.state.boardSquare11));
+                    tempArray.push(chips(currentComponent.state.boardSquare14));
+                    tempArray.push(chips(currentComponent.state.boardSquare15));
+
+                    if (tempArray.length === 4) {
+                        this.checkForWin(tempArray);
+                    }
+                }
+                if (this.state.boardSquare0 !== '' && this.state.boardSquare1 !== '' && this.state.boardSquare2 !== '' && this.state.boardSquare3 !== '' &&
+                    this.state.boardSquare4 !== '' && this.state.boardSquare5 !== '' && this.state.boardSquare6 !== '' && this.state.boardSquare7 !== '' && 
+                    this.state.boardSquare8 !== '' && this.state.boardSquare9 !== '' && this.state.boardSquare10 !== '' && this.state.boardSquare11 !== '' && 
+                    this.state.boardSquare12 !== '' && this.state.boardSquare13 !== '' && this.state.boardSquare14 !== '' && this.state.boardSquare15 !== ''
+                    && this.state.gameFinished === false) {
+                        let strText;
+                        strText = 'It\'s a tie';
+                        currentComponent.handleShowModal(strText);
+                        this.finishGame();
+                }
+            }
+        })
+    }
+
     componentDidMount() {
         this._isMounted = true;
 
@@ -349,7 +756,9 @@ class Game extends Component {
                         .then(function() {
                             console.log(idForRandom);
                             window.sessionStorage.setItem('gameID', idForRandom);
-                            window.location.reload()
+
+                            currentComponent.getUpdate();
+                            
                             // console.log("Document successfully updated!");
                         })
                         .catch(function(error) {
@@ -363,412 +772,10 @@ class Game extends Component {
                 })
             }
 
-            if (window.sessionStorage.getItem('gameID') !== null) {
-                this.props.firebase.gameRoom().where('gameID', '==', window.sessionStorage.getItem('gameID'))
-                .onSnapshot((querySnapshot) => {
-                    if (!querySnapshot.empty) {
-                        querySnapshot.forEach((doc) => {
-                            currentComponent.setState({
-                                gameID: doc.data().gameID,
-                                openGame: doc.data().openGame,
-                                ownerID: doc.data().ownerID,
-                                gameStarted: doc.data().gameStarted,
-                                timestamp: doc.data().timestamp,
-                                userID: doc.data().userID !== undefined ? doc.data().userID : '',
-                                step: doc.data().step !== undefined ?  doc.data().step  : '',
-                                stage: doc.data().stage !== undefined ?  doc.data().stage  : '',
-                                turn: doc.data().turn !== undefined ?  doc.data().turn  : '',
-                                chip1: doc.data().chip1 !== undefined ? doc.data().chip1 : '',
-                                chip2: doc.data().chip2 !== undefined ?  doc.data().chip2  : '',
-                                chip3: doc.data().chip3 !== undefined ?  doc.data().chip3  : '',
-                                chip4: doc.data().chip4 !== undefined ?  doc.data().chip4  : '',
-                                chip5: doc.data().chip5 !== undefined ?  doc.data().chip5  : '',
-                                chip6: doc.data().chip6 !== undefined ?  doc.data().chip6  : '',
-                                chip7: doc.data().chip7 !== undefined ?  doc.data().chip7  : '',
-                                chip8: doc.data().chip8 !== undefined ?  doc.data().chip8  : '',
-                                chip9: doc.data().chip9 !== undefined ?  doc.data().chip9  : '',
-                                chip10: doc.data().chip10 !== undefined ?  doc.data().chip10  : '',
-                                chip11: doc.data().chip11 !== undefined ?  doc.data().chip11  : '',
-                                chip12: doc.data().chip12 !== undefined ?  doc.data().chip12  : '',
-                                chip13: doc.data().chip13 !== undefined ?  doc.data().chip13  : '',
-                                chip14: doc.data().chip14 !== undefined ?  doc.data().chip14  : '',
-                                chip15: doc.data().chip15 !== undefined ?  doc.data().chip15  : '',
-                                chip16: doc.data().chip16 !== undefined ?  doc.data().chip16  : '',
-                                boardSquare0: doc.data().boardSquare0 !== undefined ? doc.data().boardSquare0 : '',
-                                boardSquare1: doc.data().boardSquare1 !== undefined ? doc.data().boardSquare1 : '',
-                                boardSquare2: doc.data().boardSquare2 !== undefined ? doc.data().boardSquare2 : '',
-                                boardSquare3: doc.data().boardSquare3 !== undefined ? doc.data().boardSquare3 : '',
-                                boardSquare4: doc.data().boardSquare4 !== undefined ? doc.data().boardSquare4 : '',
-                                boardSquare5: doc.data().boardSquare5 !== undefined ? doc.data().boardSquare5 : '',
-                                boardSquare6: doc.data().boardSquare6 !== undefined ? doc.data().boardSquare6 : '',
-                                boardSquare7: doc.data().boardSquare7 !== undefined ? doc.data().boardSquare7 : '',
-                                boardSquare8: doc.data().boardSquare8 !== undefined ? doc.data().boardSquare8 : '',
-                                boardSquare9: doc.data().boardSquare9 !== undefined ? doc.data().boardSquare9 : '',
-                                boardSquare10: doc.data().boardSquare10 !== undefined ? doc.data().boardSquare10 : '',
-                                boardSquare11: doc.data().boardSquare11 !== undefined ? doc.data().boardSquare11 : '',
-                                boardSquare12: doc.data().boardSquare12 !== undefined ? doc.data().boardSquare12 : '',
-                                boardSquare13: doc.data().boardSquare13 !== undefined ? doc.data().boardSquare13 : '',
-                                boardSquare14: doc.data().boardSquare14 !== undefined ? doc.data().boardSquare14 : '',
-                                boardSquare15: doc.data().boardSquare15 !== undefined ? doc.data().boardSquare15 : '',
-                                gameFinished: doc.data().gameFinished !== undefined ? doc.data().gameFinished : false,
-                                docID: doc.id
-                            });
-                        })
-                    } else {
-                        currentComponent.handleShowModal('Game with such ID does not exist');
-                    }
+            if (window.sessionStorage.getItem('gameID') !== null || currentComponent.state.gameID !== '') {
 
-
-                    // check if game exist in firestore
-                    if (currentComponent.state.gameID === '' || currentComponent.state.gameID === null) {
-                        if (document.getElementById('spinner') !== null && document.getElementById('spinner') !== 'undefined') {
-                            document.getElementById('spinner').remove();
-                            document.getElementById('spinnerText').innerText = 'Game with an entered game id does not exist';
-                            currentComponent.handleShowModal('Game with an entered game id does not exist');
-                        }
-                    } else {
-                        if (currentComponent.state.stage === "pick") {
-                            if ((window.sessionStorage.getItem('ownerID') !== null && currentComponent.state.turn === 'owner') ||
-                            (window.sessionStorage.getItem('userID') !== null && currentComponent.state.turn === 'user')) {
-                                currentComponent.setState({
-                                    actionText: 'Choose a figure for your opponent',
-                                    turnSpan: 'Your turn!',
-                                    turnSpanClass: 'yourT'
-                                })
-                                if (document.getElementById('turnSpan') !== null && document.getElementById('turnSpan') !== 'undefined') {
-                                    document.getElementById('turnSpan').style.background = '#7EDF9B';
-                                }
-                            } else {
-                                currentComponent.setState({
-                                    actionText: 'Your opponent\'s turn',
-                                    turnSpan: 'Wait!',
-                                    turnSpanClass: 'opponentT'
-                                })
-                            }
-                        } else {
-                            if ((window.sessionStorage.getItem('ownerID') !== null && currentComponent.state.turn === 'owner') ||
-                            (window.sessionStorage.getItem('userID') !== null && currentComponent.state.turn === 'user')) {
-                                currentComponent.setState({
-                                    actionText: 'Choose where to place the highlighted figure!',
-                                    turnSpan: 'Your turn!',
-                                    turnSpanClass: 'yourT'
-                                })
-                            } else {
-                                currentComponent.setState({
-                                    actionText: 'Your opponent\'s turn',
-                                    turnSpan: 'Wait!',
-                                    turnSpanClass: 'opponentT'
-                                })                            }
-                        }
-    
-                        let chipID = '';
-                        let boardSquareIDs = ['boardSquare0', 'boardSquare1', 'boardSquare2', 'boardSquare3', 'boardSquare4',
-                        'boardSquare5', 'boardSquare6', 'boardSquare7', 'boardSquare8', 'boardSquare9', 'boardSquare10',
-                        'boardSquare11', 'boardSquare12', 'boardSquare13', 'boardSquare14', 'boardSquare15'];
-                        let i;
-                        let x;
-                        const history = currentComponent.state.history.slice(0, currentComponent.state.stepNumber + 1);
-                        const current = history[history.length - 1];
-                        const squares = current.squares.slice();
-   
-                        Object.keys(currentComponent.state).forEach(function(key, index) {
-                            if (index < 16) {
-                                i = index + 1;
-                                chipID = 'chip' + i;
-                                if (document.getElementById(chipID) !== null) {
-                                    document.getElementById(chipID).classList.remove("pendChoice");
-                                    document.getElementById(chipID).classList.remove("pendDecision");
-                                }
-                            }
-
-                            if (boardSquareIDs.includes(key)) {
-                                if (currentComponent.state[key] !== '' && document.getElementById(key) !== null) {
-                                    document.getElementById(key).classList.add("reserved");
-                                    let chipRef = currentComponent.props.firebase.firestore.collection('chips').doc(currentComponent.state[key]);
-                                    chipRef.get().then((doc) => {
-                                        if (doc.exists) {
-                                            // boardSquare0 state is 29th state element...
-                                            x = index - 29;
-                                            squares[x] = <img src={doc.data().img_src} alt="Figure img" className="squareImage" style={{width: 'fit-content'}} />;
-                                            currentComponent.setState({
-                                                history: history.concat({
-                                                    squares: squares
-                                                }),
-                                                stepNumber: history.length
-                                            });
-                                        } else {
-                                            // doc.data() will be undefined in this case
-                                            console.log("No such document!");
-                                        }
-                                    }).catch((error) => {
-                                        console.log("Error getting document:", error);
-                                    });
-                                }
-                            }
-
-                            if (currentComponent.state[key] === 'pend') {
-                                if ((currentComponent.state.turn === 'user' && window.sessionStorage.getItem('ownerID') !== null  && currentComponent.state.stage === 'put') ||
-                                (currentComponent.state.turn === 'owner' && window.sessionStorage.getItem('userID') !== null  && currentComponent.state.stage === 'put')) {
-                                    document.getElementById(key).classList.add("pendChoice");
-                                } else if ((currentComponent.state.turn === 'owner' && window.sessionStorage.getItem('ownerID') !== null  && currentComponent.state.stage === 'put') ||
-                                (currentComponent.state.turn === 'user' && window.sessionStorage.getItem('userID') !== null  && currentComponent.state.stage === 'put')) {
-                                    document.getElementById(key).classList.add("pendDecision");
-                                }
-                                currentComponent.setState({activeChip: key});
-                            } 
-                        });
-
-                        // if (currentComponent.state.gameStarted === true) {
-                        //     window.sessionStorage.setItem('gameStarted', currentComponent.state.gameStarted);
-                        // }
-
-                        let tempArray = [];
-                        // horizontal win
-                        if (this.state.boardSquare0 !== '' && this.state.boardSquare1 !== '' && this.state.boardSquare2 !== '' && this.state.boardSquare3
-                        && this.state.gameFinished === false) {
-                            tempArray = [];
-                            tempArray.push(chips(currentComponent.state.boardSquare0));
-                            tempArray.push(chips(currentComponent.state.boardSquare1));
-                            tempArray.push(chips(currentComponent.state.boardSquare2));
-                            tempArray.push(chips(currentComponent.state.boardSquare3));
-
-                            if (tempArray.length === 4) {
-                                this.checkForWin(tempArray);
-                            }
-                        }
-                        if (this.state.boardSquare4 !== '' && this.state.boardSquare5 !== '' && this.state.boardSquare6 !== '' && this.state.boardSquare7 !== ''
-                        && this.state.gameFinished === false) {         
-                            tempArray = [];       
-                            tempArray.push(chips(currentComponent.state.boardSquare4));
-                            tempArray.push(chips(currentComponent.state.boardSquare5));
-                            tempArray.push(chips(currentComponent.state.boardSquare6));
-                            tempArray.push(chips(currentComponent.state.boardSquare7));
-    
-                            if (tempArray.length === 4) {
-                                this.checkForWin(tempArray);
-                            }
-                        }
-                        if (this.state.boardSquare8 !== '' && this.state.boardSquare9 !== '' && this.state.boardSquare10 !== '' && this.state.boardSquare11 !== '' 
-                        && this.state.gameFinished === false) {
-                            tempArray = [];
-                            tempArray.push(chips(currentComponent.state.boardSquare8));
-                            tempArray.push(chips(currentComponent.state.boardSquare9));
-                            tempArray.push(chips(currentComponent.state.boardSquare10));
-                            tempArray.push(chips(currentComponent.state.boardSquare11));
-    
-                            if (tempArray.length === 4) {
-                                this.checkForWin(tempArray);
-                            }
-                        }
-                        if (this.state.boardSquare12 !== '' && this.state.boardSquare13 !== '' && this.state.boardSquare14 !== '' && this.state.boardSquare15 !== ''
-                        && this.state.gameFinished === false) {
-                            tempArray = [];
-                            tempArray.push(chips(currentComponent.state.boardSquare12));
-                            tempArray.push(chips(currentComponent.state.boardSquare13));
-                            tempArray.push(chips(currentComponent.state.boardSquare14));
-                            tempArray.push(chips(currentComponent.state.boardSquare15));
-    
-                            if (tempArray.length === 4) {
-                                this.checkForWin(tempArray);
-                            }
-                        }
-                        // vertical win
-                        if (this.state.boardSquare0 !== '' && this.state.boardSquare4 !== '' && this.state.boardSquare8 !== '' && this.state.boardSquare12
-                        && this.state.gameFinished === false) {
-                            tempArray = [];
-                            tempArray.push(chips(currentComponent.state.boardSquare0));
-                            tempArray.push(chips(currentComponent.state.boardSquare4));
-                            tempArray.push(chips(currentComponent.state.boardSquare8));
-                            tempArray.push(chips(currentComponent.state.boardSquare12));
-    
-                            if (tempArray.length === 4) {
-                                this.checkForWin(tempArray);
-                            }
-                        }
-                        if (this.state.boardSquare1 !== '' && this.state.boardSquare5 !== '' && this.state.boardSquare9 !== '' && this.state.boardSquare13 !== ''
-                        && this.state.gameFinished === false) {
-                            tempArray = [];
-                            tempArray.push(chips(currentComponent.state.boardSquare1));
-                            tempArray.push(chips(currentComponent.state.boardSquare5));
-                            tempArray.push(chips(currentComponent.state.boardSquare9));
-                            tempArray.push(chips(currentComponent.state.boardSquare13));
-    
-                            if (tempArray.length === 4) {
-                                this.checkForWin(tempArray);
-                            }
-                        }
-                        if (this.state.boardSquare2 !== '' && this.state.boardSquare6 !== '' && this.state.boardSquare10 !== '' && this.state.boardSquare14 !== '' 
-                        && this.state.gameFinished === false) {
-                            tempArray = [];
-                            tempArray.push(chips(currentComponent.state.boardSquare2));
-                            tempArray.push(chips(currentComponent.state.boardSquare6));
-                            tempArray.push(chips(currentComponent.state.boardSquare10));
-                            tempArray.push(chips(currentComponent.state.boardSquare14));
-    
-                            if (tempArray.length === 4) {
-                                this.checkForWin(tempArray);
-                            }
-                        }
-                        if (this.state.boardSquare3 !== '' && this.state.boardSquare7 !== '' && this.state.boardSquare11 !== '' && this.state.boardSquare15 !== '' 
-                        && this.state.gameFinished === false) {
-                            tempArray = [];
-                            tempArray.push(chips(currentComponent.state.boardSquare3));
-                            tempArray.push(chips(currentComponent.state.boardSquare7));
-                            tempArray.push(chips(currentComponent.state.boardSquare11));
-                            tempArray.push(chips(currentComponent.state.boardSquare15));
-    
-                            if (tempArray.length === 4) {
-                                this.checkForWin(tempArray);
-                            }
-                        }
-                        // diagonal win
-                        if (this.state.boardSquare0 !== '' && this.state.boardSquare5 !== '' && this.state.boardSquare10 !== '' && this.state.boardSquare15
-                        && this.state.gameFinished === false) {
-                            tempArray = [];
-                            tempArray.push(chips(currentComponent.state.boardSquare0));
-                            tempArray.push(chips(currentComponent.state.boardSquare5));
-                            tempArray.push(chips(currentComponent.state.boardSquare10));
-                            tempArray.push(chips(currentComponent.state.boardSquare15));
-    
-                            if (tempArray.length === 4) {
-                                this.checkForWin(tempArray);
-                            }
-                        }
-                        if (this.state.boardSquare3 !== '' && this.state.boardSquare6 !== '' && this.state.boardSquare9 !== '' && this.state.boardSquare12 !== ''
-                        && this.state.gameFinished === false) {
-                            tempArray = [];
-                            tempArray.push(chips(currentComponent.state.boardSquare3));
-                            tempArray.push(chips(currentComponent.state.boardSquare6));
-                            tempArray.push(chips(currentComponent.state.boardSquare9));
-                            tempArray.push(chips(currentComponent.state.boardSquare12));
-    
-                            if (tempArray.length === 4) {
-                                this.checkForWin(tempArray);
-                            }
-                        }
-                        // rectangular win
-                        if (this.state.boardSquare0 !== '' && this.state.boardSquare1 !== '' && this.state.boardSquare4 !== '' && this.state.boardSquare5 !== ''
-                        && this.state.gameFinished === false) {
-                            tempArray = [];
-                            tempArray.push(chips(currentComponent.state.boardSquare0));
-                            tempArray.push(chips(currentComponent.state.boardSquare1));
-                            tempArray.push(chips(currentComponent.state.boardSquare4));
-                            tempArray.push(chips(currentComponent.state.boardSquare5));
-    
-                            if (tempArray.length === 4) {
-                                this.checkForWin(tempArray);
-                            }
-                        }
-                        if (this.state.boardSquare1 !== '' && this.state.boardSquare2 !== '' && this.state.boardSquare5 !== '' && this.state.boardSquare6 !== ''
-                        && this.state.gameFinished === false) {
-                            tempArray = [];
-                            tempArray.push(chips(currentComponent.state.boardSquare1));
-                            tempArray.push(chips(currentComponent.state.boardSquare2));
-                            tempArray.push(chips(currentComponent.state.boardSquare5));
-                            tempArray.push(chips(currentComponent.state.boardSquare6));
-    
-                            if (tempArray.length === 4) {
-                                this.checkForWin(tempArray);
-                            }
-                        }
-                        if (this.state.boardSquare2 !== '' && this.state.boardSquare3 !== '' && this.state.boardSquare6 !== '' && this.state.boardSquare7 !== ''
-                        && this.state.gameFinished === false) {
-                            tempArray = [];
-                            tempArray.push(chips(currentComponent.state.boardSquare2));
-                            tempArray.push(chips(currentComponent.state.boardSquare3));
-                            tempArray.push(chips(currentComponent.state.boardSquare6));
-                            tempArray.push(chips(currentComponent.state.boardSquare7));
-    
-                            if (tempArray.length === 4) {
-                                this.checkForWin(tempArray);
-                            }
-                        }
-                        if (this.state.boardSquare4 !== '' && this.state.boardSquare5 !== '' && this.state.boardSquare8 !== '' && this.state.boardSquare9 !== ''
-                        && this.state.gameFinished === false) {
-                            tempArray = [];
-                            tempArray.push(chips(currentComponent.state.boardSquare4));
-                            tempArray.push(chips(currentComponent.state.boardSquare5));
-                            tempArray.push(chips(currentComponent.state.boardSquare8));
-                            tempArray.push(chips(currentComponent.state.boardSquare9));
-    
-                            if (tempArray.length === 4) {
-                                this.checkForWin(tempArray);
-                            }
-                        }
-                        if (this.state.boardSquare5 !== '' && this.state.boardSquare6 !== '' && this.state.boardSquare9 !== '' && this.state.boardSquare10 !== ''
-                        && this.state.gameFinished === false) {
-                            tempArray = [];
-                            tempArray.push(chips(currentComponent.state.boardSquare5));
-                            tempArray.push(chips(currentComponent.state.boardSquare6));
-                            tempArray.push(chips(currentComponent.state.boardSquare9));
-                            tempArray.push(chips(currentComponent.state.boardSquare10));
-    
-                            if (tempArray.length === 4) {
-                                this.checkForWin(tempArray);
-                            }
-                        }
-                        if (this.state.boardSquare6 !== '' && this.state.boardSquare7 !== '' && this.state.boardSquare10 !== '' && this.state.boardSquare11 !== ''
-                        && this.state.gameFinished === false) {
-                            tempArray = [];
-                            tempArray.push(chips(currentComponent.state.boardSquare6));
-                            tempArray.push(chips(currentComponent.state.boardSquare7));
-                            tempArray.push(chips(currentComponent.state.boardSquare10));
-                            tempArray.push(chips(currentComponent.state.boardSquare11));
-    
-                            if (tempArray.length === 4) {
-                                this.checkForWin(tempArray);
-                            }
-                        }
-                        if (this.state.boardSquare8 !== '' && this.state.boardSquare9 !== '' && this.state.boardSquare12 !== '' && this.state.boardSquare13 !== ''
-                        && this.state.gameFinished === false) {
-                            tempArray = [];
-                            tempArray.push(chips(currentComponent.state.boardSquare8));
-                            tempArray.push(chips(currentComponent.state.boardSquare9));
-                            tempArray.push(chips(currentComponent.state.boardSquare12));
-                            tempArray.push(chips(currentComponent.state.boardSquare13));
-    
-                            if (tempArray.length === 4) {
-                                this.checkForWin(tempArray);
-                            }
-                        }
-                        if (this.state.boardSquare9 !== '' && this.state.boardSquare10 !== '' && this.state.boardSquare13 !== '' && this.state.boardSquare14 !== ''
-                        && this.state.gameFinished === false) {
-                            tempArray = [];
-                            tempArray.push(chips(currentComponent.state.boardSquare9));
-                            tempArray.push(chips(currentComponent.state.boardSquare10));
-                            tempArray.push(chips(currentComponent.state.boardSquare13));
-                            tempArray.push(chips(currentComponent.state.boardSquare14));
-    
-                            if (tempArray.length === 4) {
-                                this.checkForWin(tempArray);
-                            }
-                        }
-                        if (this.state.boardSquare10 !== '' && this.state.boardSquare11 !== '' && this.state.boardSquare14 !== '' && this.state.boardSquare15 !== ''
-                        && this.state.gameFinished === false) {
-                            tempArray = [];
-                            tempArray.push(chips(currentComponent.state.boardSquare10));
-                            tempArray.push(chips(currentComponent.state.boardSquare11));
-                            tempArray.push(chips(currentComponent.state.boardSquare14));
-                            tempArray.push(chips(currentComponent.state.boardSquare15));
-    
-                            if (tempArray.length === 4) {
-                                this.checkForWin(tempArray);
-                            }
-                        }
-                        if (this.state.boardSquare0 !== '' && this.state.boardSquare1 !== '' && this.state.boardSquare2 !== '' && this.state.boardSquare3 !== '' &&
-                            this.state.boardSquare4 !== '' && this.state.boardSquare5 !== '' && this.state.boardSquare6 !== '' && this.state.boardSquare7 !== '' && 
-                            this.state.boardSquare8 !== '' && this.state.boardSquare9 !== '' && this.state.boardSquare10 !== '' && this.state.boardSquare11 !== '' && 
-                            this.state.boardSquare12 !== '' && this.state.boardSquare13 !== '' && this.state.boardSquare14 !== '' && this.state.boardSquare15 !== ''
-                            && this.state.gameFinished === false) {
-                                let strText;
-                                strText = 'It\'s a tie';
-                                currentComponent.handleShowModal(strText);
-                                this.finishGame();
-                        }
-                    }
-                })
-
-                this._isMounted = false;
+                currentComponent.getUpdate();
+                currentComponent._isMounted = false;
             }
 
             // friend just joined the game
