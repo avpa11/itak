@@ -72,15 +72,18 @@ class Home extends Component {
                     <Form onSubmit={e => this.handleSubmit(e)}>
                         <Row className="formRow">
                             <Col md={12}>
-                                <Form.Label>Tell you partner this game ID: </Form.Label><br />
-                                
+                                {/* <Form.Label>Tell you partner this game ID: </Form.Label><br /> */}
                             </Col>
                         </Row>
                         <Row className="formRow">
-                            <Col md={5}>
+                            {/* <Col md={5}>
                                 <Form.Label id="gameID" name="gameID" style={{backgroundColor: '#E8E8E8', padding: '5px 10px'}}>{gameID}</Form.Label>
-                            </Col>
-                            <Col md={7} style={{padding: '5px 0 5px'}}>
+                                </Col>
+                                <Col md={7} style={{padding: '5px 0 5px'}}>
+                                <input onChange={this.handleChange} type="checkbox" name="openGame" style={{marginRight:  '10px'}} />
+                                <Form.Label>  Public Game: </Form.Label>
+                            </Col> */}
+                            <Col md={12}>
                                 <input onChange={this.handleChange} type="checkbox" name="openGame" style={{marginRight:  '10px'}} />
                                 <Form.Label>  Public Game: </Form.Label>
                             </Col>
@@ -88,12 +91,12 @@ class Home extends Component {
                         <Row className="formRow">
                             <Col md={6}>
                                 <div className="buttonWrapper">
-                                    <Button variant="warning" as={Link} to="/" className="buttonStyle">Back</Button>
+                                    <Button variant="warning" as={Link} to="/" className="buttonStyle shadowBox">Back</Button>
                                 </div>
                             </Col>
                             <Col md={6}>
                                 <div className="buttonWrapper">
-                                    <Button variant="warning" type="submit" className="buttonStyle">Start game</Button>
+                                    <Button variant="warning" type="submit" className="buttonStyle shadowBox">Start game</Button>
                                 </div>
                             </Col>
                         </Row>

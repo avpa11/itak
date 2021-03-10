@@ -66,12 +66,12 @@ class JoinFriend extends Component {
                         <Row>
                             <Col md={6}>
                                 <div className="buttonWrapper">
-                                    <Button variant="warning" as={Link} to="/" className="buttonStyle">Back</Button>
+                                    <Button variant="warning" as={Link} to="/" className="buttonStyle shadowBox">Back</Button>
                                 </div>
                             </Col>
                             <Col md={6}>
                                 <div className="buttonWrapper">
-                                    <Button variant="warning" type="submit" className="buttonStyle">Continue</Button>
+                                    <Button variant="warning" type="submit" className="buttonStyle shadowBox">Continue</Button>
                                 </div>
                             </Col>
                         </Row>

@@ -243,6 +243,25 @@ class Game extends Component {
         }
     }
 
+    checkForWin(tempArray) {
+        let bWinning = false;
+        let currentComponent = this;
+        bWinning = isWinningPattern(tempArray[0], tempArray[1], tempArray[2], tempArray[3]);
+        if (bWinning) {
+            let strText;
+            if ((window.sessionStorage.getItem('ownerID') !== null && currentComponent.state.turn === 'owner') ||
+            (window.sessionStorage.getItem('userID') !== null && currentComponent.state.turn === 'user')) {
+                console.log("You win!");
+                strText = 'You win!';
+            } else {
+                console.log("You lose!");
+                strText = 'You lose!';
+            }
+            currentComponent.handleShowModal(strText);
+            this.finishGame();
+        }
+    }
+
     finishGame() {
         let currentComponent = this;
 
@@ -335,6 +354,9 @@ class Game extends Component {
                             // The document probably doesn't exist.
                             console.error("Error updating document: ", error);
                         });
+                    } else {
+                        // alert('There are no available public games right now');
+                        currentComponent.handleShowModal('There are no available public games right now');
                     }
                 })
             }
@@ -342,59 +364,65 @@ class Game extends Component {
             if (window.sessionStorage.getItem('gameID') !== null) {
                 this.props.firebase.gameRoom().where('gameID', '==', window.sessionStorage.getItem('gameID'))
                 .onSnapshot((querySnapshot) => {
-                    querySnapshot.forEach((doc) => {
-                        currentComponent.setState({
-                            gameID: doc.data().gameID,
-                            openGame: doc.data().openGame,
-                            ownerID: doc.data().ownerID,
-                            gameStarted: doc.data().gameStarted,
-                            timestamp: doc.data().timestamp,
-                            userID: doc.data().userID !== undefined ? doc.data().userID : '',
-                            step: doc.data().step !== undefined ?  doc.data().step  : '',
-                            stage: doc.data().stage !== undefined ?  doc.data().stage  : '',
-                            turn: doc.data().turn !== undefined ?  doc.data().turn  : '',
-                            chip1: doc.data().chip1 !== undefined ? doc.data().chip1 : '',
-                            chip2: doc.data().chip2 !== undefined ?  doc.data().chip2  : '',
-                            chip3: doc.data().chip3 !== undefined ?  doc.data().chip3  : '',
-                            chip4: doc.data().chip4 !== undefined ?  doc.data().chip4  : '',
-                            chip5: doc.data().chip5 !== undefined ?  doc.data().chip5  : '',
-                            chip6: doc.data().chip6 !== undefined ?  doc.data().chip6  : '',
-                            chip7: doc.data().chip7 !== undefined ?  doc.data().chip7  : '',
-                            chip8: doc.data().chip8 !== undefined ?  doc.data().chip8  : '',
-                            chip9: doc.data().chip9 !== undefined ?  doc.data().chip9  : '',
-                            chip10: doc.data().chip10 !== undefined ?  doc.data().chip10  : '',
-                            chip11: doc.data().chip11 !== undefined ?  doc.data().chip11  : '',
-                            chip12: doc.data().chip12 !== undefined ?  doc.data().chip12  : '',
-                            chip13: doc.data().chip13 !== undefined ?  doc.data().chip13  : '',
-                            chip14: doc.data().chip14 !== undefined ?  doc.data().chip14  : '',
-                            chip15: doc.data().chip15 !== undefined ?  doc.data().chip15  : '',
-                            chip16: doc.data().chip16 !== undefined ?  doc.data().chip16  : '',
-                            boardSquare0: doc.data().boardSquare0 !== undefined ? doc.data().boardSquare0 : '',
-                            boardSquare1: doc.data().boardSquare1 !== undefined ? doc.data().boardSquare1 : '',
-                            boardSquare2: doc.data().boardSquare2 !== undefined ? doc.data().boardSquare2 : '',
-                            boardSquare3: doc.data().boardSquare3 !== undefined ? doc.data().boardSquare3 : '',
-                            boardSquare4: doc.data().boardSquare4 !== undefined ? doc.data().boardSquare4 : '',
-                            boardSquare5: doc.data().boardSquare5 !== undefined ? doc.data().boardSquare5 : '',
-                            boardSquare6: doc.data().boardSquare6 !== undefined ? doc.data().boardSquare6 : '',
-                            boardSquare7: doc.data().boardSquare7 !== undefined ? doc.data().boardSquare7 : '',
-                            boardSquare8: doc.data().boardSquare8 !== undefined ? doc.data().boardSquare8 : '',
-                            boardSquare9: doc.data().boardSquare9 !== undefined ? doc.data().boardSquare9 : '',
-                            boardSquare10: doc.data().boardSquare10 !== undefined ? doc.data().boardSquare10 : '',
-                            boardSquare11: doc.data().boardSquare11 !== undefined ? doc.data().boardSquare11 : '',
-                            boardSquare12: doc.data().boardSquare12 !== undefined ? doc.data().boardSquare12 : '',
-                            boardSquare13: doc.data().boardSquare13 !== undefined ? doc.data().boardSquare13 : '',
-                            boardSquare14: doc.data().boardSquare14 !== undefined ? doc.data().boardSquare14 : '',
-                            boardSquare15: doc.data().boardSquare15 !== undefined ? doc.data().boardSquare15 : '',
-                            gameFinished: doc.data().gameFinished !== undefined ? doc.data().gameFinished : false,
-                            docID: doc.id
-                        });
-                    })
+                    if (!querySnapshot.empty) {
+                        querySnapshot.forEach((doc) => {
+                            currentComponent.setState({
+                                gameID: doc.data().gameID,
+                                openGame: doc.data().openGame,
+                                ownerID: doc.data().ownerID,
+                                gameStarted: doc.data().gameStarted,
+                                timestamp: doc.data().timestamp,
+                                userID: doc.data().userID !== undefined ? doc.data().userID : '',
+                                step: doc.data().step !== undefined ?  doc.data().step  : '',
+                                stage: doc.data().stage !== undefined ?  doc.data().stage  : '',
+                                turn: doc.data().turn !== undefined ?  doc.data().turn  : '',
+                                chip1: doc.data().chip1 !== undefined ? doc.data().chip1 : '',
+                                chip2: doc.data().chip2 !== undefined ?  doc.data().chip2  : '',
+                                chip3: doc.data().chip3 !== undefined ?  doc.data().chip3  : '',
+                                chip4: doc.data().chip4 !== undefined ?  doc.data().chip4  : '',
+                                chip5: doc.data().chip5 !== undefined ?  doc.data().chip5  : '',
+                                chip6: doc.data().chip6 !== undefined ?  doc.data().chip6  : '',
+                                chip7: doc.data().chip7 !== undefined ?  doc.data().chip7  : '',
+                                chip8: doc.data().chip8 !== undefined ?  doc.data().chip8  : '',
+                                chip9: doc.data().chip9 !== undefined ?  doc.data().chip9  : '',
+                                chip10: doc.data().chip10 !== undefined ?  doc.data().chip10  : '',
+                                chip11: doc.data().chip11 !== undefined ?  doc.data().chip11  : '',
+                                chip12: doc.data().chip12 !== undefined ?  doc.data().chip12  : '',
+                                chip13: doc.data().chip13 !== undefined ?  doc.data().chip13  : '',
+                                chip14: doc.data().chip14 !== undefined ?  doc.data().chip14  : '',
+                                chip15: doc.data().chip15 !== undefined ?  doc.data().chip15  : '',
+                                chip16: doc.data().chip16 !== undefined ?  doc.data().chip16  : '',
+                                boardSquare0: doc.data().boardSquare0 !== undefined ? doc.data().boardSquare0 : '',
+                                boardSquare1: doc.data().boardSquare1 !== undefined ? doc.data().boardSquare1 : '',
+                                boardSquare2: doc.data().boardSquare2 !== undefined ? doc.data().boardSquare2 : '',
+                                boardSquare3: doc.data().boardSquare3 !== undefined ? doc.data().boardSquare3 : '',
+                                boardSquare4: doc.data().boardSquare4 !== undefined ? doc.data().boardSquare4 : '',
+                                boardSquare5: doc.data().boardSquare5 !== undefined ? doc.data().boardSquare5 : '',
+                                boardSquare6: doc.data().boardSquare6 !== undefined ? doc.data().boardSquare6 : '',
+                                boardSquare7: doc.data().boardSquare7 !== undefined ? doc.data().boardSquare7 : '',
+                                boardSquare8: doc.data().boardSquare8 !== undefined ? doc.data().boardSquare8 : '',
+                                boardSquare9: doc.data().boardSquare9 !== undefined ? doc.data().boardSquare9 : '',
+                                boardSquare10: doc.data().boardSquare10 !== undefined ? doc.data().boardSquare10 : '',
+                                boardSquare11: doc.data().boardSquare11 !== undefined ? doc.data().boardSquare11 : '',
+                                boardSquare12: doc.data().boardSquare12 !== undefined ? doc.data().boardSquare12 : '',
+                                boardSquare13: doc.data().boardSquare13 !== undefined ? doc.data().boardSquare13 : '',
+                                boardSquare14: doc.data().boardSquare14 !== undefined ? doc.data().boardSquare14 : '',
+                                boardSquare15: doc.data().boardSquare15 !== undefined ? doc.data().boardSquare15 : '',
+                                gameFinished: doc.data().gameFinished !== undefined ? doc.data().gameFinished : false,
+                                docID: doc.id
+                            });
+                        })
+                    } else {
+                        currentComponent.handleShowModal('Game with such ID does not exist');
+                    }
+
 
                     // check if game exist in firestore
                     if (currentComponent.state.gameID === '' || currentComponent.state.gameID === null) {
                         if (document.getElementById('spinner') !== null && document.getElementById('spinner') !== 'undefined') {
                             document.getElementById('spinner').remove();
                             document.getElementById('spinnerText').innerText = 'Game with an entered game id does not exist';
+                            currentComponent.handleShowModal('Game with an entered game id does not exist');
                         }
                     } else {
                         if (currentComponent.state.stage === "pick") {
@@ -459,7 +487,7 @@ class Game extends Component {
                                         if (doc.exists) {
                                             // boardSquare0 state is 29th state element...
                                             x = index - 29;
-                                            squares[x] = <img src={doc.data().img_src} alt="Figure img" style={{width: 'fit-content'}} />;
+                                            squares[x] = <img src={doc.data().img_src} alt="Figure img" className="squareImage" style={{width: 'fit-content'}} />;
                                             currentComponent.setState({
                                                 history: history.concat({
                                                     squares: squares
@@ -492,7 +520,6 @@ class Game extends Component {
                         //     window.sessionStorage.setItem('gameStarted', currentComponent.state.gameStarted);
                         // }
 
-                        let bWinning = false;
                         let tempArray = [];
                         // horizontal win
                         if (this.state.boardSquare0 !== '' && this.state.boardSquare1 !== '' && this.state.boardSquare2 !== '' && this.state.boardSquare3
@@ -504,20 +531,7 @@ class Game extends Component {
                             tempArray.push(chips(currentComponent.state.boardSquare3));
 
                             if (tempArray.length === 4) {
-                                bWinning = isWinningPattern(tempArray[0], tempArray[1], tempArray[2], tempArray[3]);
-                                if (bWinning) {
-                                    let strText;
-                                    if ((window.sessionStorage.getItem('ownerID') !== null && currentComponent.state.turn === 'owner') ||
-                                    (window.sessionStorage.getItem('userID') !== null && currentComponent.state.turn === 'user')) {
-                                        console.log("You win!");
-                                        strText = 'You win!';
-                                    } else {
-                                        console.log("You lose!");
-                                        strText = 'You lose!';
-                                    }
-                                    currentComponent.handleShowModal(strText);
-                                    this.finishGame();
-                                }
+                                this.checkForWin(tempArray);
                             }
                         }
                         if (this.state.boardSquare4 !== '' && this.state.boardSquare5 !== '' && this.state.boardSquare6 !== '' && this.state.boardSquare7 !== ''
@@ -529,20 +543,7 @@ class Game extends Component {
                             tempArray.push(chips(currentComponent.state.boardSquare7));
     
                             if (tempArray.length === 4) {
-                                bWinning = isWinningPattern(tempArray[0], tempArray[1], tempArray[2], tempArray[3]);
-                                if (bWinning) {
-                                    let strText;
-                                    if ((window.sessionStorage.getItem('ownerID') !== null && currentComponent.state.turn === 'owner') ||
-                                    (window.sessionStorage.getItem('userID') !== null && currentComponent.state.turn === 'user')) {
-                                        console.log("You win!");
-                                        strText = 'You win!';
-                                    } else {
-                                        console.log("You lose!");
-                                        strText = 'You lose!';
-                                    }
-                                    currentComponent.handleShowModal(strText);
-                                    this.finishGame();
-                                }
+                                this.checkForWin(tempArray);
                             }
                         }
                         if (this.state.boardSquare8 !== '' && this.state.boardSquare9 !== '' && this.state.boardSquare10 !== '' && this.state.boardSquare11 !== '' 
@@ -554,20 +555,7 @@ class Game extends Component {
                             tempArray.push(chips(currentComponent.state.boardSquare11));
     
                             if (tempArray.length === 4) {
-                                bWinning = isWinningPattern(tempArray[0], tempArray[1], tempArray[2], tempArray[3]);
-                                if (bWinning) {
-                                    let strText;
-                                    if ((window.sessionStorage.getItem('ownerID') !== null && currentComponent.state.turn === 'owner') ||
-                                    (window.sessionStorage.getItem('userID') !== null && currentComponent.state.turn === 'user')) {
-                                        console.log("You win!");
-                                        strText = 'You win!';
-                                    } else {
-                                        console.log("You lose!");
-                                        strText = 'You lose!';
-                                    }
-                                    currentComponent.handleShowModal(strText);
-                                    this.finishGame();
-                                }
+                                this.checkForWin(tempArray);
                             }
                         }
                         if (this.state.boardSquare12 !== '' && this.state.boardSquare13 !== '' && this.state.boardSquare14 !== '' && this.state.boardSquare15 !== ''
@@ -579,20 +567,7 @@ class Game extends Component {
                             tempArray.push(chips(currentComponent.state.boardSquare15));
     
                             if (tempArray.length === 4) {
-                                bWinning = isWinningPattern(tempArray[0], tempArray[1], tempArray[2], tempArray[3]);
-                                if (bWinning) {
-                                    let strText;
-                                    if ((window.sessionStorage.getItem('ownerID') !== null && currentComponent.state.turn === 'owner') ||
-                                    (window.sessionStorage.getItem('userID') !== null && currentComponent.state.turn === 'user')) {
-                                        console.log("You win!");
-                                        strText = 'You win!';
-                                    } else {
-                                        console.log("You lose!");
-                                        strText = 'You lose!';
-                                    }
-                                    currentComponent.handleShowModal(strText);
-                                    this.finishGame();
-                                }
+                                this.checkForWin(tempArray);
                             }
                         }
                         // vertical win
@@ -605,20 +580,7 @@ class Game extends Component {
                             tempArray.push(chips(currentComponent.state.boardSquare12));
     
                             if (tempArray.length === 4) {
-                                bWinning = isWinningPattern(tempArray[0], tempArray[1], tempArray[2], tempArray[3]);
-                                if (bWinning) {
-                                    let strText;
-                                    if ((window.sessionStorage.getItem('ownerID') !== null && currentComponent.state.turn === 'owner') ||
-                                    (window.sessionStorage.getItem('userID') !== null && currentComponent.state.turn === 'user')) {
-                                        console.log("You win!");
-                                        strText = 'You win!';
-                                    } else {
-                                        console.log("You lose!");
-                                        strText = 'You lose!';
-                                    }
-                                    currentComponent.handleShowModal(strText);
-                                    this.finishGame();
-                                }
+                                this.checkForWin(tempArray);
                             }
                         }
                         if (this.state.boardSquare1 !== '' && this.state.boardSquare5 !== '' && this.state.boardSquare9 !== '' && this.state.boardSquare13 !== ''
@@ -630,20 +592,7 @@ class Game extends Component {
                             tempArray.push(chips(currentComponent.state.boardSquare13));
     
                             if (tempArray.length === 4) {
-                                bWinning = isWinningPattern(tempArray[0], tempArray[1], tempArray[2], tempArray[3]);
-                                if (bWinning) {
-                                    let strText;
-                                    if ((window.sessionStorage.getItem('ownerID') !== null && currentComponent.state.turn === 'owner') ||
-                                    (window.sessionStorage.getItem('userID') !== null && currentComponent.state.turn === 'user')) {
-                                        console.log("You win!");
-                                        strText = 'You win!';
-                                    } else {
-                                        console.log("You lose!");
-                                        strText = 'You lose!';
-                                    }
-                                    currentComponent.handleShowModal(strText);
-                                    this.finishGame();
-                                }
+                                this.checkForWin(tempArray);
                             }
                         }
                         if (this.state.boardSquare2 !== '' && this.state.boardSquare6 !== '' && this.state.boardSquare10 !== '' && this.state.boardSquare14 !== '' 
@@ -655,20 +604,7 @@ class Game extends Component {
                             tempArray.push(chips(currentComponent.state.boardSquare14));
     
                             if (tempArray.length === 4) {
-                                bWinning = isWinningPattern(tempArray[0], tempArray[1], tempArray[2], tempArray[3]);
-                                if (bWinning) {
-                                    let strText;
-                                    if ((window.sessionStorage.getItem('ownerID') !== null && currentComponent.state.turn === 'owner') ||
-                                    (window.sessionStorage.getItem('userID') !== null && currentComponent.state.turn === 'user')) {
-                                        console.log("You win!");
-                                        strText = 'You win!';
-                                    } else {
-                                        console.log("You lose!");
-                                        strText = 'You lose!';
-                                    }
-                                    currentComponent.handleShowModal(strText);
-                                    this.finishGame();
-                                }
+                                this.checkForWin(tempArray);
                             }
                         }
                         if (this.state.boardSquare3 !== '' && this.state.boardSquare7 !== '' && this.state.boardSquare11 !== '' && this.state.boardSquare15 !== '' 
@@ -680,20 +616,7 @@ class Game extends Component {
                             tempArray.push(chips(currentComponent.state.boardSquare15));
     
                             if (tempArray.length === 4) {
-                                bWinning = isWinningPattern(tempArray[0], tempArray[1], tempArray[2], tempArray[3]);
-                                if (bWinning) {
-                                    let strText;
-                                    if ((window.sessionStorage.getItem('ownerID') !== null && currentComponent.state.turn === 'owner') ||
-                                    (window.sessionStorage.getItem('userID') !== null && currentComponent.state.turn === 'user')) {
-                                        console.log("You win!");
-                                        strText = 'You win!';
-                                    } else {
-                                        console.log("You lose!");
-                                        strText = 'You lose!';
-                                    }
-                                    currentComponent.handleShowModal(strText);
-                                    this.finishGame();
-                                }
+                                this.checkForWin(tempArray);
                             }
                         }
                         // diagonal win
@@ -706,20 +629,7 @@ class Game extends Component {
                             tempArray.push(chips(currentComponent.state.boardSquare15));
     
                             if (tempArray.length === 4) {
-                                bWinning = isWinningPattern(tempArray[0], tempArray[1], tempArray[2], tempArray[3]);
-                                if (bWinning) {
-                                    let strText;
-                                    if ((window.sessionStorage.getItem('ownerID') !== null && currentComponent.state.turn === 'owner') ||
-                                    (window.sessionStorage.getItem('userID') !== null && currentComponent.state.turn === 'user')) {
-                                        console.log("You win!");
-                                        strText = 'You win!';
-                                    } else {
-                                        console.log("You lose!");
-                                        strText = 'You lose!';
-                                    }
-                                    currentComponent.handleShowModal(strText);
-                                    this.finishGame();
-                                }
+                                this.checkForWin(tempArray);
                             }
                         }
                         if (this.state.boardSquare3 !== '' && this.state.boardSquare6 !== '' && this.state.boardSquare9 !== '' && this.state.boardSquare12 !== ''
@@ -731,20 +641,7 @@ class Game extends Component {
                             tempArray.push(chips(currentComponent.state.boardSquare12));
     
                             if (tempArray.length === 4) {
-                                bWinning = isWinningPattern(tempArray[0], tempArray[1], tempArray[2], tempArray[3]);
-                                if (bWinning) {
-                                    let strText;
-                                    if ((window.sessionStorage.getItem('ownerID') !== null && currentComponent.state.turn === 'owner') ||
-                                    (window.sessionStorage.getItem('userID') !== null && currentComponent.state.turn === 'user')) {
-                                        console.log("You win!");
-                                        strText = 'You win!';
-                                    } else {
-                                        console.log("You lose!");
-                                        strText = 'You lose!';
-                                    }
-                                    currentComponent.handleShowModal(strText);
-                                    this.finishGame();
-                                }
+                                this.checkForWin(tempArray);
                             }
                         }
                         // rectangular win
@@ -757,45 +654,19 @@ class Game extends Component {
                             tempArray.push(chips(currentComponent.state.boardSquare5));
     
                             if (tempArray.length === 4) {
-                                bWinning = isWinningPattern(tempArray[0], tempArray[1], tempArray[2], tempArray[3]);
-                                if (bWinning) {
-                                    let strText;
-                                    if ((window.sessionStorage.getItem('ownerID') !== null && currentComponent.state.turn === 'owner') ||
-                                    (window.sessionStorage.getItem('userID') !== null && currentComponent.state.turn === 'user')) {
-                                        console.log("You win!");
-                                        strText = 'You win!';
-                                    } else {
-                                        console.log("You lose!");
-                                        strText = 'You lose!';
-                                    }
-                                    currentComponent.handleShowModal(strText);
-                                    this.finishGame();
-                                }
+                                this.checkForWin(tempArray);
                             }
                         }
-                        if (this.state.boardSquare1 !== '' && this.state.boardSquare2 !== '' && this.state.boardSquare4 !== '' && this.state.boardSquare6 !== ''
+                        if (this.state.boardSquare1 !== '' && this.state.boardSquare2 !== '' && this.state.boardSquare5 !== '' && this.state.boardSquare6 !== ''
                         && this.state.gameFinished === false) {
                             tempArray = [];
                             tempArray.push(chips(currentComponent.state.boardSquare1));
                             tempArray.push(chips(currentComponent.state.boardSquare2));
-                            tempArray.push(chips(currentComponent.state.boardSquare4));
+                            tempArray.push(chips(currentComponent.state.boardSquare5));
                             tempArray.push(chips(currentComponent.state.boardSquare6));
     
                             if (tempArray.length === 4) {
-                                bWinning = isWinningPattern(tempArray[0], tempArray[1], tempArray[2], tempArray[3]);
-                                if (bWinning) {
-                                    let strText;
-                                    if ((window.sessionStorage.getItem('ownerID') !== null && currentComponent.state.turn === 'owner') ||
-                                    (window.sessionStorage.getItem('userID') !== null && currentComponent.state.turn === 'user')) {
-                                        console.log("You win!");
-                                        strText = 'You win!';
-                                    } else {
-                                        console.log("You lose!");
-                                        strText = 'You lose!';
-                                    }
-                                    currentComponent.handleShowModal(strText);
-                                    this.finishGame();
-                                }
+                                this.checkForWin(tempArray);
                             }
                         }
                         if (this.state.boardSquare2 !== '' && this.state.boardSquare3 !== '' && this.state.boardSquare6 !== '' && this.state.boardSquare7 !== ''
@@ -807,20 +678,7 @@ class Game extends Component {
                             tempArray.push(chips(currentComponent.state.boardSquare7));
     
                             if (tempArray.length === 4) {
-                                bWinning = isWinningPattern(tempArray[0], tempArray[1], tempArray[2], tempArray[3]);
-                                if (bWinning) {
-                                    let strText;
-                                    if ((window.sessionStorage.getItem('ownerID') !== null && currentComponent.state.turn === 'owner') ||
-                                    (window.sessionStorage.getItem('userID') !== null && currentComponent.state.turn === 'user')) {
-                                        console.log("You win!");
-                                        strText = 'You win!';
-                                    } else {
-                                        console.log("You lose!");
-                                        strText = 'You lose!';
-                                    }
-                                    currentComponent.handleShowModal(strText);
-                                    this.finishGame();
-                                }
+                                this.checkForWin(tempArray);
                             }
                         }
                         if (this.state.boardSquare4 !== '' && this.state.boardSquare5 !== '' && this.state.boardSquare8 !== '' && this.state.boardSquare9 !== ''
@@ -832,20 +690,7 @@ class Game extends Component {
                             tempArray.push(chips(currentComponent.state.boardSquare9));
     
                             if (tempArray.length === 4) {
-                                bWinning = isWinningPattern(tempArray[0], tempArray[1], tempArray[2], tempArray[3]);
-                                if (bWinning) {
-                                    let strText;
-                                    if ((window.sessionStorage.getItem('ownerID') !== null && currentComponent.state.turn === 'owner') ||
-                                    (window.sessionStorage.getItem('userID') !== null && currentComponent.state.turn === 'user')) {
-                                        console.log("You win!");
-                                        strText = 'You win!';
-                                    } else {
-                                        console.log("You lose!");
-                                        strText = 'You lose!';
-                                    }
-                                    currentComponent.handleShowModal(strText);
-                                    this.finishGame();
-                                }
+                                this.checkForWin(tempArray);
                             }
                         }
                         if (this.state.boardSquare5 !== '' && this.state.boardSquare6 !== '' && this.state.boardSquare9 !== '' && this.state.boardSquare10 !== ''
@@ -857,20 +702,7 @@ class Game extends Component {
                             tempArray.push(chips(currentComponent.state.boardSquare10));
     
                             if (tempArray.length === 4) {
-                                bWinning = isWinningPattern(tempArray[0], tempArray[1], tempArray[2], tempArray[3]);
-                                if (bWinning) {
-                                    let strText;
-                                    if ((window.sessionStorage.getItem('ownerID') !== null && currentComponent.state.turn === 'owner') ||
-                                    (window.sessionStorage.getItem('userID') !== null && currentComponent.state.turn === 'user')) {
-                                        console.log("You win!");
-                                        strText = 'You win!';
-                                    } else {
-                                        console.log("You lose!");
-                                        strText = 'You lose!';
-                                    }
-                                    currentComponent.handleShowModal(strText);
-                                    this.finishGame();
-                                }
+                                this.checkForWin(tempArray);
                             }
                         }
                         if (this.state.boardSquare6 !== '' && this.state.boardSquare7 !== '' && this.state.boardSquare10 !== '' && this.state.boardSquare11 !== ''
@@ -882,20 +714,7 @@ class Game extends Component {
                             tempArray.push(chips(currentComponent.state.boardSquare11));
     
                             if (tempArray.length === 4) {
-                                bWinning = isWinningPattern(tempArray[0], tempArray[1], tempArray[2], tempArray[3]);
-                                if (bWinning) {
-                                    let strText;
-                                    if ((window.sessionStorage.getItem('ownerID') !== null && currentComponent.state.turn === 'owner') ||
-                                    (window.sessionStorage.getItem('userID') !== null && currentComponent.state.turn === 'user')) {
-                                        console.log("You win!");
-                                        strText = 'You win!';
-                                    } else {
-                                        console.log("You lose!");
-                                        strText = 'You lose!';
-                                    }
-                                    currentComponent.handleShowModal(strText);
-                                    this.finishGame();
-                                }
+                                this.checkForWin(tempArray);
                             }
                         }
                         if (this.state.boardSquare8 !== '' && this.state.boardSquare9 !== '' && this.state.boardSquare12 !== '' && this.state.boardSquare13 !== ''
@@ -907,20 +726,7 @@ class Game extends Component {
                             tempArray.push(chips(currentComponent.state.boardSquare13));
     
                             if (tempArray.length === 4) {
-                                bWinning = isWinningPattern(tempArray[0], tempArray[1], tempArray[2], tempArray[3]);
-                                if (bWinning) {
-                                    let strText;
-                                    if ((window.sessionStorage.getItem('ownerID') !== null && currentComponent.state.turn === 'owner') ||
-                                    (window.sessionStorage.getItem('userID') !== null && currentComponent.state.turn === 'user')) {
-                                        console.log("You win!");
-                                        strText = 'You win!';
-                                    } else {
-                                        console.log("You lose!");
-                                        strText = 'You lose!';
-                                    }
-                                    currentComponent.handleShowModal(strText);
-                                    this.finishGame();
-                                }
+                                this.checkForWin(tempArray);
                             }
                         }
                         if (this.state.boardSquare9 !== '' && this.state.boardSquare10 !== '' && this.state.boardSquare13 !== '' && this.state.boardSquare14 !== ''
@@ -932,20 +738,7 @@ class Game extends Component {
                             tempArray.push(chips(currentComponent.state.boardSquare14));
     
                             if (tempArray.length === 4) {
-                                bWinning = isWinningPattern(tempArray[0], tempArray[1], tempArray[2], tempArray[3]);
-                                if (bWinning) {
-                                    let strText;
-                                    if ((window.sessionStorage.getItem('ownerID') !== null && currentComponent.state.turn === 'owner') ||
-                                    (window.sessionStorage.getItem('userID') !== null && currentComponent.state.turn === 'user')) {
-                                        console.log("You win!");
-                                        strText = 'You win!';
-                                    } else {
-                                        console.log("You lose!");
-                                        strText = 'You lose!';
-                                    }
-                                    currentComponent.handleShowModal(strText);
-                                    this.finishGame();
-                                }
+                                this.checkForWin(tempArray);
                             }
                         }
                         if (this.state.boardSquare10 !== '' && this.state.boardSquare11 !== '' && this.state.boardSquare14 !== '' && this.state.boardSquare15 !== ''
@@ -957,20 +750,7 @@ class Game extends Component {
                             tempArray.push(chips(currentComponent.state.boardSquare15));
     
                             if (tempArray.length === 4) {
-                                bWinning = isWinningPattern(tempArray[0], tempArray[1], tempArray[2], tempArray[3]);
-                                if (bWinning) {
-                                    let strText;
-                                    if ((window.sessionStorage.getItem('ownerID') !== null && currentComponent.state.turn === 'owner') ||
-                                    (window.sessionStorage.getItem('userID') !== null && currentComponent.state.turn === 'user')) {
-                                        console.log("You win!");
-                                        strText = 'You win!';
-                                    } else {
-                                        console.log("You lose!");
-                                        strText = 'You lose!';
-                                    }
-                                    currentComponent.handleShowModal(strText);
-                                    this.finishGame();
-                                }
+                                this.checkForWin(tempArray);
                             }
                         }
                         if (this.state.boardSquare0 !== '' && this.state.boardSquare1 !== '' && this.state.boardSquare2 !== '' && this.state.boardSquare3 !== '' &&
@@ -1037,6 +817,7 @@ class Game extends Component {
 
     componentWillUnmount() {
         this._isMounted = false;
+        this.setState({...initState});
     }
 
 
@@ -1082,6 +863,7 @@ class Game extends Component {
         this.props.history.push({
             pathname: '/',
         });
+        this.setState({...initState});
     }
     handleShowModal(strText) {
         this.setState({ 
@@ -1101,10 +883,10 @@ class Game extends Component {
                         <Col md="5">
                             {/* <h1>iTak game</h1> */}
                             <React.Fragment>
-                                <h2 style={{paddingBottom: '10px', paddingTop: '10px'}}>Game ID: {gameID}</h2>
+                                <h2 style={{paddingBottom: '10px', paddingTop: '10px'}}>Game ID: <span style={{fontWeight: 'bold'}}>{gameID}</span></h2>
                             </React.Fragment>
-                                <span id="turnSpan" className={turnSpanClass}>{turnSpan}</span>
-                                <p style={{fontSize: '20px', paddingTop: '20px'}}>{actionText}</p>
+                                <span id="turnSpan" className={turnSpanClass} style={{display: turnSpan === '' ? 'none' : 'initial '}}>{turnSpan}</span>
+                                <p style={{fontSize: '20px', paddingTop: '20px'}}>{gameStarted === true ? actionText : 'Tell you partner the above game ID'}</p>
                             <React.Fragment>
                                 <div className="chips">
                                     <div>
@@ -1274,7 +1056,7 @@ class Game extends Component {
                         centered
                     >
                         <Modal.Header closeButton>
-                        <Modal.Title>Modal title</Modal.Title>
+                        <Modal.Title>Game result</Modal.Title>
                         </Modal.Header>
                         <Modal.Body>
                             <p>{modalText}</p>

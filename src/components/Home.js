@@ -18,11 +18,11 @@ class Home extends Component {
                 <main className="text-center form-signin h-100">
                     <h1>Welcome to iTak</h1>
                     <Row style={{padding: '15px'}}></Row>
-                    <Button variant="warning" as={Link} to="/new">New Game</Button>
+                    <Button className="shadowBox" variant="warning" as={Link} to="/new">New Game</Button>
                     <Row style={{padding: '15px'}}></Row>
-                    <Button variant="warning" as={Link} to="/join-friend">Join Friend's Game</Button>
+                    <Button className="shadowBox" variant="warning" as={Link} to="/join-friend">Join Friend's Game</Button>
                     <Row style={{padding: '15px'}}></Row>
-                    <Button variant="warning" as={Link} to="/join-random">Join Random Game</Button>
+                    <Button className="shadowBox" variant="warning" as={Link} to="/join-random">Join Random Game</Button>
                 </main>
             </React.Fragment>
         )

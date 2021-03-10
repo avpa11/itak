@@ -6,9 +6,7 @@
 
 body {
   font-family: 'Lexend Mega', sans-serif;
-  background-size: 120%;
-  background-image: url('/src/images/background.jpg');
-  background-repeat: no-repeat;
+  background-color: #FFF9E6;
 }
 
 button, .btn {
@@ -133,6 +131,16 @@ button, .btn {
 }
 
 @media (max-width: 991px)  {
+  .squareImage {
+    -webkit-transform: translate( -25%, -25%) scale3d(0.5, 0.5, 1); /* Saf3.1+, Chrome */
+    -moz-transform: translate( -25%, -25%) scale3d(0.5, 0.5, 1); /* FF3.5+ */
+     -ms-transform: translate( -25%, -25%) scale3d(0.5, 0.5, 1); /* IE9 */
+      -o-transform: translate( -25%, -25%) scale3d(0.5, 0.5, 1); /* Opera 10.5+ */
+    transform: translate( -25%, -25%) scale3d(0.5, 0.5, 1);
+            /* IE6–IE9 */
+            filter: progid:DXImageTransform.Microsoft.Matrix(M11=0.9999619230641713, M12=-0.008726535498373935, M21=0.008726535498373935, M22=0.9999619230641713,SizingMethod='auto expand');
+  }
+
   .game {
     top: 0;
     padding-bottom: 20px;
@@ -178,7 +186,7 @@ button, .btn {
 }
 
 #boardSquare12, #boardSquare13, #boardSquare14, #boardSquare15 {
-  box-shadow: 0 3px #7e7e7e;
+  box-shadow: 0px 2px 1.5px #888888;
 }
 
 #turnSpan, #donateButton {
@@ -187,6 +195,11 @@ button, .btn {
   border-radius: 5px;
   box-shadow: 0px 2px 5px #888888;
   font-size: 20px;
+}
+
+.shadowBox {
+  border-radius: 5px;
+  box-shadow: 0px 2px 5px #888888;
 }
 
 .yourT {
