@@ -292,20 +292,22 @@ class Game extends Component {
         if (this._isMounted) {
             let currentComponent = this;
 
-            if (this.props.location.previouspath === '/new' || this.props.location.previouspath === '/join-friend')
+            if (this.props.location.previouspath === '/new' || this.props.location.previouspath === '/join-friend' || this.props.location.previouspath === '/join-random')
             {
-                window.sessionStorage.setItem("gameID", this.props.location.gameID);
                 window.sessionStorage.setItem("previouspath", this.props.location.previouspath);
                 if (this.props.location.previouspath === '/new' ) {
+                    window.sessionStorage.setItem("gameID", this.props.location.gameID);
                     window.sessionStorage.setItem("ownerID", this.props.location.ownerID);
+                } else if (this.props.location.previouspath === '/join-random') {
+                    window.sessionStorage.setItem("userID", this.props.location.userID); 
                 } else {
+                    window.sessionStorage.setItem("gameID", this.props.location.gameID);
                     window.sessionStorage.setItem("userID", this.props.location.userID);
                 }
-            }
-            
-            if (this.props.location.previouspath === '/join-random') {
-                window.sessionStorage.setItem("previouspath", this.props.location.previouspath);
-                window.sessionStorage.setItem("userID", this.props.location.userID);
+            } else {
+                this.props.history.push({
+                    pathname: '/',
+                });
             }
 
             // random join
