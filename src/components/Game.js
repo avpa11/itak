@@ -58,16 +58,51 @@ const initState = {
     boardSquare13: '',
     boardSquare14: '',
     boardSquare15: '',
-    squaresValues: [],
+    gameFinished: false,
     showModal: false,
     modalText: '',
-    zero: [],
-    one: [],
-    two: [],
-    three: [],
     history: [
         {squares: Array(16).fill(null)}
     ]
+}
+
+function chips(chip) {
+    switch (chip) {
+        case 'chip1':
+            return ['green', 'small', 'round', 'dotless'];
+        case 'chip2':
+            return ['green', 'small', 'square', 'dotless'];
+        case 'chip3':
+            return ['yellow', 'small', 'square', 'dotless'];
+        case 'chip4':
+            return ['yellow', 'small', 'round', 'dotless'];
+        case 'chip5':
+            return ['green', 'big', 'round', 'with_dot'];
+        case 'chip6':
+            return ['green', 'big', 'square', 'with_dot'];
+        case 'chip7':
+            return ['yellow', 'big', 'square', 'with_dot'];
+        case 'chip8':
+            return ['yellow', 'big', 'round', 'with_dot'];
+        case 'chip9':
+            return ['green', 'small', 'round', 'with_dot'];
+        case 'chip10':
+            return ['green', 'small', 'square', 'with_dot'];
+        case 'chip11':
+            return ['yellow', 'small', 'square', 'with_dot'];
+        case 'chip12':
+            return ['yellow', 'small', 'round', 'with_dot'];
+        case 'chip13':
+            return ['green', 'big', 'round', 'dotless'];
+        case 'chip14':
+            return ['green', 'big', 'square', 'dotless'];
+        case 'chip15':
+            return ['yellow', 'big', 'square', 'dotless'];
+        case 'chip16':
+            return ['yellow', 'big', 'round', 'dotless'];
+        default:
+            break;
+    }
 }
 
 function isWinningPattern(array1, array2, array3, array4) {
@@ -79,7 +114,7 @@ function isWinningPattern(array1, array2, array3, array4) {
     && !Array.isArray(array3) && !Array.isArray(array4)) {
         return false;
     }
-
+    
     if (Array.isArray(array1) && array1.length) {
         if (array1.length !== array2.length &&
             array1.length !== array3.length &&
@@ -206,6 +241,28 @@ class Game extends Component {
         }
     }
 
+    finishGame() {
+        let currentComponent = this;
+
+        this.props.firebase.gameRoom().where('gameID', '==', window.sessionStorage.getItem('gameID'))
+        .get()
+        .then(function(querySnapshot) {
+            querySnapshot.forEach(function(doc) {
+                currentComponent.props.firebase.gameRoom().doc(doc.id).update({
+                    'gameFinished': true
+                })
+                .then(function() {
+                    // window.sessionStorage.setItem('gameStarted', true);
+                    // console.log("Document successfully updated!");
+                })
+                .catch(function(error) {
+                    // The document probably doesn't exist.
+                    console.error("Error updating document: ", error);
+                });
+            });
+        })
+    }
+
     componentDidMount() {
         this._isMounted = true;
 
@@ -272,6 +329,7 @@ class Game extends Component {
                             boardSquare13: doc.data().boardSquare13 !== undefined ? doc.data().boardSquare13 : '',
                             boardSquare14: doc.data().boardSquare14 !== undefined ? doc.data().boardSquare14 : '',
                             boardSquare15: doc.data().boardSquare15 !== undefined ? doc.data().boardSquare15 : '',
+                            gameFinished: doc.data().gameFinished !== undefined ? doc.data().gameFinished : false,
                             docID: doc.id
                         });
                     })
@@ -359,9 +417,498 @@ class Game extends Component {
                         // if (currentComponent.state.gameStarted === true) {
                         //     window.sessionStorage.setItem('gameStarted', currentComponent.state.gameStarted);
                         // }
-                        currentComponent.checkforWinner();
 
+                        let bWinning = false;
+                        let tempArray = [];
+                        // horizontal win
+                        if (this.state.boardSquare0 !== '' && this.state.boardSquare1 !== '' && this.state.boardSquare2 !== '' && this.state.boardSquare3
+                        && this.state.gameFinished === false) {
+                            tempArray = [];
+                            tempArray.push(chips(currentComponent.state.boardSquare0));
+                            tempArray.push(chips(currentComponent.state.boardSquare1));
+                            tempArray.push(chips(currentComponent.state.boardSquare2));
+                            tempArray.push(chips(currentComponent.state.boardSquare3));
 
+                            if (tempArray.length === 4) {
+                                bWinning = isWinningPattern(tempArray[0], tempArray[1], tempArray[2], tempArray[3]);
+                                if (bWinning) {
+                                    let strText;
+                                    if ((window.sessionStorage.getItem('ownerID') !== null && currentComponent.state.turn === 'owner') ||
+                                    (window.sessionStorage.getItem('userID') !== null && currentComponent.state.turn === 'user')) {
+                                        console.log("You win!");
+                                        strText = 'You win!';
+                                    } else {
+                                        console.log("You lose!");
+                                        strText = 'You lose!';
+                                    }
+                                    currentComponent.handleShowModal(strText);
+                                    this.finishGame();
+                                }
+                            }
+                        }
+                        if (this.state.boardSquare4 !== '' && this.state.boardSquare5 !== '' && this.state.boardSquare6 !== '' && this.state.boardSquare7 !== ''
+                        && this.state.gameFinished === false) {         
+                            tempArray = [];       
+                            tempArray.push(chips(currentComponent.state.boardSquare4));
+                            tempArray.push(chips(currentComponent.state.boardSquare5));
+                            tempArray.push(chips(currentComponent.state.boardSquare6));
+                            tempArray.push(chips(currentComponent.state.boardSquare7));
+    
+                            if (tempArray.length === 4) {
+                                bWinning = isWinningPattern(tempArray[0], tempArray[1], tempArray[2], tempArray[3]);
+                                if (bWinning) {
+                                    let strText;
+                                    if ((window.sessionStorage.getItem('ownerID') !== null && currentComponent.state.turn === 'owner') ||
+                                    (window.sessionStorage.getItem('userID') !== null && currentComponent.state.turn === 'user')) {
+                                        console.log("You win!");
+                                        strText = 'You win!';
+                                    } else {
+                                        console.log("You lose!");
+                                        strText = 'You lose!';
+                                    }
+                                    currentComponent.handleShowModal(strText);
+                                    this.finishGame();
+                                }
+                            }
+                        }
+                        if (this.state.boardSquare8 !== '' && this.state.boardSquare9 !== '' && this.state.boardSquare10 !== '' && this.state.boardSquare11 !== '' 
+                        && this.state.gameFinished === false) {
+                            tempArray = [];
+                            tempArray.push(chips(currentComponent.state.boardSquare8));
+                            tempArray.push(chips(currentComponent.state.boardSquare9));
+                            tempArray.push(chips(currentComponent.state.boardSquare10));
+                            tempArray.push(chips(currentComponent.state.boardSquare11));
+    
+                            if (tempArray.length === 4) {
+                                bWinning = isWinningPattern(tempArray[0], tempArray[1], tempArray[2], tempArray[3]);
+                                if (bWinning) {
+                                    let strText;
+                                    if ((window.sessionStorage.getItem('ownerID') !== null && currentComponent.state.turn === 'owner') ||
+                                    (window.sessionStorage.getItem('userID') !== null && currentComponent.state.turn === 'user')) {
+                                        console.log("You win!");
+                                        strText = 'You win!';
+                                    } else {
+                                        console.log("You lose!");
+                                        strText = 'You lose!';
+                                    }
+                                    currentComponent.handleShowModal(strText);
+                                    this.finishGame();
+                                }
+                            }
+                        }
+                        if (this.state.boardSquare12 !== '' && this.state.boardSquare13 !== '' && this.state.boardSquare14 !== '' && this.state.boardSquare15 !== ''
+                        && this.state.gameFinished === false) {
+                            tempArray = [];
+                            tempArray.push(chips(currentComponent.state.boardSquare12));
+                            tempArray.push(chips(currentComponent.state.boardSquare13));
+                            tempArray.push(chips(currentComponent.state.boardSquare14));
+                            tempArray.push(chips(currentComponent.state.boardSquare15));
+    
+                            if (tempArray.length === 4) {
+                                bWinning = isWinningPattern(tempArray[0], tempArray[1], tempArray[2], tempArray[3]);
+                                if (bWinning) {
+                                    let strText;
+                                    if ((window.sessionStorage.getItem('ownerID') !== null && currentComponent.state.turn === 'owner') ||
+                                    (window.sessionStorage.getItem('userID') !== null && currentComponent.state.turn === 'user')) {
+                                        console.log("You win!");
+                                        strText = 'You win!';
+                                    } else {
+                                        console.log("You lose!");
+                                        strText = 'You lose!';
+                                    }
+                                    currentComponent.handleShowModal(strText);
+                                    this.finishGame();
+                                }
+                            }
+                        }
+                        // vertical win
+                        if (this.state.boardSquare0 !== '' && this.state.boardSquare4 !== '' && this.state.boardSquare8 !== '' && this.state.boardSquare12
+                        && this.state.gameFinished === false) {
+                            tempArray = [];
+                            tempArray.push(chips(currentComponent.state.boardSquare0));
+                            tempArray.push(chips(currentComponent.state.boardSquare4));
+                            tempArray.push(chips(currentComponent.state.boardSquare8));
+                            tempArray.push(chips(currentComponent.state.boardSquare12));
+    
+                            if (tempArray.length === 4) {
+                                bWinning = isWinningPattern(tempArray[0], tempArray[1], tempArray[2], tempArray[3]);
+                                if (bWinning) {
+                                    let strText;
+                                    if ((window.sessionStorage.getItem('ownerID') !== null && currentComponent.state.turn === 'owner') ||
+                                    (window.sessionStorage.getItem('userID') !== null && currentComponent.state.turn === 'user')) {
+                                        console.log("You win!");
+                                        strText = 'You win!';
+                                    } else {
+                                        console.log("You lose!");
+                                        strText = 'You lose!';
+                                    }
+                                    currentComponent.handleShowModal(strText);
+                                    this.finishGame();
+                                }
+                            }
+                        }
+                        if (this.state.boardSquare1 !== '' && this.state.boardSquare5 !== '' && this.state.boardSquare9 !== '' && this.state.boardSquare13 !== ''
+                        && this.state.gameFinished === false) {
+                            tempArray = [];
+                            tempArray.push(chips(currentComponent.state.boardSquare1));
+                            tempArray.push(chips(currentComponent.state.boardSquare5));
+                            tempArray.push(chips(currentComponent.state.boardSquare9));
+                            tempArray.push(chips(currentComponent.state.boardSquare13));
+    
+                            if (tempArray.length === 4) {
+                                bWinning = isWinningPattern(tempArray[0], tempArray[1], tempArray[2], tempArray[3]);
+                                if (bWinning) {
+                                    let strText;
+                                    if ((window.sessionStorage.getItem('ownerID') !== null && currentComponent.state.turn === 'owner') ||
+                                    (window.sessionStorage.getItem('userID') !== null && currentComponent.state.turn === 'user')) {
+                                        console.log("You win!");
+                                        strText = 'You win!';
+                                    } else {
+                                        console.log("You lose!");
+                                        strText = 'You lose!';
+                                    }
+                                    currentComponent.handleShowModal(strText);
+                                    this.finishGame();
+                                }
+                            }
+                        }
+                        if (this.state.boardSquare2 !== '' && this.state.boardSquare6 !== '' && this.state.boardSquare10 !== '' && this.state.boardSquare14 !== '' 
+                        && this.state.gameFinished === false) {
+                            tempArray = [];
+                            tempArray.push(chips(currentComponent.state.boardSquare2));
+                            tempArray.push(chips(currentComponent.state.boardSquare6));
+                            tempArray.push(chips(currentComponent.state.boardSquare10));
+                            tempArray.push(chips(currentComponent.state.boardSquare14));
+    
+                            if (tempArray.length === 4) {
+                                bWinning = isWinningPattern(tempArray[0], tempArray[1], tempArray[2], tempArray[3]);
+                                if (bWinning) {
+                                    let strText;
+                                    if ((window.sessionStorage.getItem('ownerID') !== null && currentComponent.state.turn === 'owner') ||
+                                    (window.sessionStorage.getItem('userID') !== null && currentComponent.state.turn === 'user')) {
+                                        console.log("You win!");
+                                        strText = 'You win!';
+                                    } else {
+                                        console.log("You lose!");
+                                        strText = 'You lose!';
+                                    }
+                                    currentComponent.handleShowModal(strText);
+                                    this.finishGame();
+                                }
+                            }
+                        }
+                        if (this.state.boardSquare3 !== '' && this.state.boardSquare7 !== '' && this.state.boardSquare11 !== '' && this.state.boardSquare15 !== '' 
+                        && this.state.gameFinished === false) {
+                            tempArray = [];
+                            tempArray.push(chips(currentComponent.state.boardSquare3));
+                            tempArray.push(chips(currentComponent.state.boardSquare7));
+                            tempArray.push(chips(currentComponent.state.boardSquare11));
+                            tempArray.push(chips(currentComponent.state.boardSquare15));
+    
+                            if (tempArray.length === 4) {
+                                bWinning = isWinningPattern(tempArray[0], tempArray[1], tempArray[2], tempArray[3]);
+                                if (bWinning) {
+                                    let strText;
+                                    if ((window.sessionStorage.getItem('ownerID') !== null && currentComponent.state.turn === 'owner') ||
+                                    (window.sessionStorage.getItem('userID') !== null && currentComponent.state.turn === 'user')) {
+                                        console.log("You win!");
+                                        strText = 'You win!';
+                                    } else {
+                                        console.log("You lose!");
+                                        strText = 'You lose!';
+                                    }
+                                    currentComponent.handleShowModal(strText);
+                                    this.finishGame();
+                                }
+                            }
+                        }
+                        // diagonal win
+                        if (this.state.boardSquare0 !== '' && this.state.boardSquare5 !== '' && this.state.boardSquare10 !== '' && this.state.boardSquare15
+                        && this.state.gameFinished === false) {
+                            tempArray = [];
+                            tempArray.push(chips(currentComponent.state.boardSquare0));
+                            tempArray.push(chips(currentComponent.state.boardSquare5));
+                            tempArray.push(chips(currentComponent.state.boardSquare10));
+                            tempArray.push(chips(currentComponent.state.boardSquare15));
+    
+                            if (tempArray.length === 4) {
+                                bWinning = isWinningPattern(tempArray[0], tempArray[1], tempArray[2], tempArray[3]);
+                                if (bWinning) {
+                                    let strText;
+                                    if ((window.sessionStorage.getItem('ownerID') !== null && currentComponent.state.turn === 'owner') ||
+                                    (window.sessionStorage.getItem('userID') !== null && currentComponent.state.turn === 'user')) {
+                                        console.log("You win!");
+                                        strText = 'You win!';
+                                    } else {
+                                        console.log("You lose!");
+                                        strText = 'You lose!';
+                                    }
+                                    currentComponent.handleShowModal(strText);
+                                    this.finishGame();
+                                }
+                            }
+                        }
+                        if (this.state.boardSquare3 !== '' && this.state.boardSquare6 !== '' && this.state.boardSquare9 !== '' && this.state.boardSquare12 !== ''
+                        && this.state.gameFinished === false) {
+                            tempArray = [];
+                            tempArray.push(chips(currentComponent.state.boardSquare3));
+                            tempArray.push(chips(currentComponent.state.boardSquare6));
+                            tempArray.push(chips(currentComponent.state.boardSquare9));
+                            tempArray.push(chips(currentComponent.state.boardSquare12));
+    
+                            if (tempArray.length === 4) {
+                                bWinning = isWinningPattern(tempArray[0], tempArray[1], tempArray[2], tempArray[3]);
+                                if (bWinning) {
+                                    let strText;
+                                    if ((window.sessionStorage.getItem('ownerID') !== null && currentComponent.state.turn === 'owner') ||
+                                    (window.sessionStorage.getItem('userID') !== null && currentComponent.state.turn === 'user')) {
+                                        console.log("You win!");
+                                        strText = 'You win!';
+                                    } else {
+                                        console.log("You lose!");
+                                        strText = 'You lose!';
+                                    }
+                                    currentComponent.handleShowModal(strText);
+                                    this.finishGame();
+                                }
+                            }
+                        }
+                        // rectangular win
+                        if (this.state.boardSquare0 !== '' && this.state.boardSquare1 !== '' && this.state.boardSquare4 !== '' && this.state.boardSquare5 !== ''
+                        && this.state.gameFinished === false) {
+                            tempArray = [];
+                            tempArray.push(chips(currentComponent.state.boardSquare0));
+                            tempArray.push(chips(currentComponent.state.boardSquare1));
+                            tempArray.push(chips(currentComponent.state.boardSquare4));
+                            tempArray.push(chips(currentComponent.state.boardSquare5));
+    
+                            if (tempArray.length === 4) {
+                                bWinning = isWinningPattern(tempArray[0], tempArray[1], tempArray[2], tempArray[3]);
+                                if (bWinning) {
+                                    let strText;
+                                    if ((window.sessionStorage.getItem('ownerID') !== null && currentComponent.state.turn === 'owner') ||
+                                    (window.sessionStorage.getItem('userID') !== null && currentComponent.state.turn === 'user')) {
+                                        console.log("You win!");
+                                        strText = 'You win!';
+                                    } else {
+                                        console.log("You lose!");
+                                        strText = 'You lose!';
+                                    }
+                                    currentComponent.handleShowModal(strText);
+                                    this.finishGame();
+                                }
+                            }
+                        }
+                        if (this.state.boardSquare1 !== '' && this.state.boardSquare2 !== '' && this.state.boardSquare4 !== '' && this.state.boardSquare6 !== ''
+                        && this.state.gameFinished === false) {
+                            tempArray = [];
+                            tempArray.push(chips(currentComponent.state.boardSquare1));
+                            tempArray.push(chips(currentComponent.state.boardSquare2));
+                            tempArray.push(chips(currentComponent.state.boardSquare4));
+                            tempArray.push(chips(currentComponent.state.boardSquare6));
+    
+                            if (tempArray.length === 4) {
+                                bWinning = isWinningPattern(tempArray[0], tempArray[1], tempArray[2], tempArray[3]);
+                                if (bWinning) {
+                                    let strText;
+                                    if ((window.sessionStorage.getItem('ownerID') !== null && currentComponent.state.turn === 'owner') ||
+                                    (window.sessionStorage.getItem('userID') !== null && currentComponent.state.turn === 'user')) {
+                                        console.log("You win!");
+                                        strText = 'You win!';
+                                    } else {
+                                        console.log("You lose!");
+                                        strText = 'You lose!';
+                                    }
+                                    currentComponent.handleShowModal(strText);
+                                    this.finishGame();
+                                }
+                            }
+                        }
+                        if (this.state.boardSquare2 !== '' && this.state.boardSquare3 !== '' && this.state.boardSquare6 !== '' && this.state.boardSquare7 !== ''
+                        && this.state.gameFinished === false) {
+                            tempArray = [];
+                            tempArray.push(chips(currentComponent.state.boardSquare2));
+                            tempArray.push(chips(currentComponent.state.boardSquare3));
+                            tempArray.push(chips(currentComponent.state.boardSquare6));
+                            tempArray.push(chips(currentComponent.state.boardSquare7));
+    
+                            if (tempArray.length === 4) {
+                                bWinning = isWinningPattern(tempArray[0], tempArray[1], tempArray[2], tempArray[3]);
+                                if (bWinning) {
+                                    let strText;
+                                    if ((window.sessionStorage.getItem('ownerID') !== null && currentComponent.state.turn === 'owner') ||
+                                    (window.sessionStorage.getItem('userID') !== null && currentComponent.state.turn === 'user')) {
+                                        console.log("You win!");
+                                        strText = 'You win!';
+                                    } else {
+                                        console.log("You lose!");
+                                        strText = 'You lose!';
+                                    }
+                                    currentComponent.handleShowModal(strText);
+                                    this.finishGame();
+                                }
+                            }
+                        }
+                        if (this.state.boardSquare4 !== '' && this.state.boardSquare5 !== '' && this.state.boardSquare8 !== '' && this.state.boardSquare9 !== ''
+                        && this.state.gameFinished === false) {
+                            tempArray = [];
+                            tempArray.push(chips(currentComponent.state.boardSquare4));
+                            tempArray.push(chips(currentComponent.state.boardSquare5));
+                            tempArray.push(chips(currentComponent.state.boardSquare8));
+                            tempArray.push(chips(currentComponent.state.boardSquare9));
+    
+                            if (tempArray.length === 4) {
+                                bWinning = isWinningPattern(tempArray[0], tempArray[1], tempArray[2], tempArray[3]);
+                                if (bWinning) {
+                                    let strText;
+                                    if ((window.sessionStorage.getItem('ownerID') !== null && currentComponent.state.turn === 'owner') ||
+                                    (window.sessionStorage.getItem('userID') !== null && currentComponent.state.turn === 'user')) {
+                                        console.log("You win!");
+                                        strText = 'You win!';
+                                    } else {
+                                        console.log("You lose!");
+                                        strText = 'You lose!';
+                                    }
+                                    currentComponent.handleShowModal(strText);
+                                    this.finishGame();
+                                }
+                            }
+                        }
+                        if (this.state.boardSquare5 !== '' && this.state.boardSquare6 !== '' && this.state.boardSquare9 !== '' && this.state.boardSquare10 !== ''
+                        && this.state.gameFinished === false) {
+                            tempArray = [];
+                            tempArray.push(chips(currentComponent.state.boardSquare5));
+                            tempArray.push(chips(currentComponent.state.boardSquare6));
+                            tempArray.push(chips(currentComponent.state.boardSquare9));
+                            tempArray.push(chips(currentComponent.state.boardSquare10));
+    
+                            if (tempArray.length === 4) {
+                                bWinning = isWinningPattern(tempArray[0], tempArray[1], tempArray[2], tempArray[3]);
+                                if (bWinning) {
+                                    let strText;
+                                    if ((window.sessionStorage.getItem('ownerID') !== null && currentComponent.state.turn === 'owner') ||
+                                    (window.sessionStorage.getItem('userID') !== null && currentComponent.state.turn === 'user')) {
+                                        console.log("You win!");
+                                        strText = 'You win!';
+                                    } else {
+                                        console.log("You lose!");
+                                        strText = 'You lose!';
+                                    }
+                                    currentComponent.handleShowModal(strText);
+                                    this.finishGame();
+                                }
+                            }
+                        }
+                        if (this.state.boardSquare6 !== '' && this.state.boardSquare7 !== '' && this.state.boardSquare10 !== '' && this.state.boardSquare11 !== ''
+                        && this.state.gameFinished === false) {
+                            tempArray = [];
+                            tempArray.push(chips(currentComponent.state.boardSquare6));
+                            tempArray.push(chips(currentComponent.state.boardSquare7));
+                            tempArray.push(chips(currentComponent.state.boardSquare10));
+                            tempArray.push(chips(currentComponent.state.boardSquare11));
+    
+                            if (tempArray.length === 4) {
+                                bWinning = isWinningPattern(tempArray[0], tempArray[1], tempArray[2], tempArray[3]);
+                                if (bWinning) {
+                                    let strText;
+                                    if ((window.sessionStorage.getItem('ownerID') !== null && currentComponent.state.turn === 'owner') ||
+                                    (window.sessionStorage.getItem('userID') !== null && currentComponent.state.turn === 'user')) {
+                                        console.log("You win!");
+                                        strText = 'You win!';
+                                    } else {
+                                        console.log("You lose!");
+                                        strText = 'You lose!';
+                                    }
+                                    currentComponent.handleShowModal(strText);
+                                    this.finishGame();
+                                }
+                            }
+                        }
+                        if (this.state.boardSquare8 !== '' && this.state.boardSquare9 !== '' && this.state.boardSquare12 !== '' && this.state.boardSquare13 !== ''
+                        && this.state.gameFinished === false) {
+                            tempArray = [];
+                            tempArray.push(chips(currentComponent.state.boardSquare8));
+                            tempArray.push(chips(currentComponent.state.boardSquare9));
+                            tempArray.push(chips(currentComponent.state.boardSquare12));
+                            tempArray.push(chips(currentComponent.state.boardSquare13));
+    
+                            if (tempArray.length === 4) {
+                                bWinning = isWinningPattern(tempArray[0], tempArray[1], tempArray[2], tempArray[3]);
+                                if (bWinning) {
+                                    let strText;
+                                    if ((window.sessionStorage.getItem('ownerID') !== null && currentComponent.state.turn === 'owner') ||
+                                    (window.sessionStorage.getItem('userID') !== null && currentComponent.state.turn === 'user')) {
+                                        console.log("You win!");
+                                        strText = 'You win!';
+                                    } else {
+                                        console.log("You lose!");
+                                        strText = 'You lose!';
+                                    }
+                                    currentComponent.handleShowModal(strText);
+                                    this.finishGame();
+                                }
+                            }
+                        }
+                        if (this.state.boardSquare9 !== '' && this.state.boardSquare10 !== '' && this.state.boardSquare13 !== '' && this.state.boardSquare14 !== ''
+                        && this.state.gameFinished === false) {
+                            tempArray = [];
+                            tempArray.push(chips(currentComponent.state.boardSquare9));
+                            tempArray.push(chips(currentComponent.state.boardSquare10));
+                            tempArray.push(chips(currentComponent.state.boardSquare13));
+                            tempArray.push(chips(currentComponent.state.boardSquare14));
+    
+                            if (tempArray.length === 4) {
+                                bWinning = isWinningPattern(tempArray[0], tempArray[1], tempArray[2], tempArray[3]);
+                                if (bWinning) {
+                                    let strText;
+                                    if ((window.sessionStorage.getItem('ownerID') !== null && currentComponent.state.turn === 'owner') ||
+                                    (window.sessionStorage.getItem('userID') !== null && currentComponent.state.turn === 'user')) {
+                                        console.log("You win!");
+                                        strText = 'You win!';
+                                    } else {
+                                        console.log("You lose!");
+                                        strText = 'You lose!';
+                                    }
+                                    currentComponent.handleShowModal(strText);
+                                    this.finishGame();
+                                }
+                            }
+                        }
+                        if (this.state.boardSquare10 !== '' && this.state.boardSquare11 !== '' && this.state.boardSquare14 !== '' && this.state.boardSquare15 !== ''
+                        && this.state.gameFinished === false) {
+                            tempArray = [];
+                            tempArray.push(chips(currentComponent.state.boardSquare10));
+                            tempArray.push(chips(currentComponent.state.boardSquare11));
+                            tempArray.push(chips(currentComponent.state.boardSquare14));
+                            tempArray.push(chips(currentComponent.state.boardSquare15));
+    
+                            if (tempArray.length === 4) {
+                                bWinning = isWinningPattern(tempArray[0], tempArray[1], tempArray[2], tempArray[3]);
+                                if (bWinning) {
+                                    let strText;
+                                    if ((window.sessionStorage.getItem('ownerID') !== null && currentComponent.state.turn === 'owner') ||
+                                    (window.sessionStorage.getItem('userID') !== null && currentComponent.state.turn === 'user')) {
+                                        console.log("You win!");
+                                        strText = 'You win!';
+                                    } else {
+                                        console.log("You lose!");
+                                        strText = 'You lose!';
+                                    }
+                                    currentComponent.handleShowModal(strText);
+                                    this.finishGame();
+                                }
+                            }
+                        }
+                        if (this.state.boardSquare0 !== '' && this.state.boardSquare1 !== '' && this.state.boardSquare2 !== '' && this.state.boardSquare3 !== '' &&
+                            this.state.boardSquare4 !== '' && this.state.boardSquare5 !== '' && this.state.boardSquare6 !== '' && this.state.boardSquare7 !== '' && 
+                            this.state.boardSquare8 !== '' && this.state.boardSquare9 !== '' && this.state.boardSquare10 !== '' && this.state.boardSquare11 !== '' && 
+                            this.state.boardSquare12 !== '' && this.state.boardSquare13 !== '' && this.state.boardSquare14 !== '' && this.state.boardSquare15 !== ''
+                            && this.state.gameFinished === false) {
+                                let strText;
+                                strText = 'It\'s a tie';
+                                currentComponent.handleShowModal(strText);
+                                this.finishGame();
+                        }
                     }
                 })
 
@@ -369,9 +916,8 @@ class Game extends Component {
             }
 
             // friend just joined the game
-            // if (window.sessionStorage.getItem('previouspath') !== null && window.sessionStorage.getItem('previouspath')=== '/join-friend'
-            // && currentComponent.state.gameStarted === false) {
-            if (window.sessionStorage.getItem('previouspath') !== null && window.sessionStorage.getItem('previouspath')=== '/join-friend') {
+            if (window.sessionStorage.getItem('previouspath') !== null && window.sessionStorage.getItem('previouspath')=== '/join-friend'
+            && currentComponent.state.gameStarted === false) {
                 this.props.firebase.gameRoom().where('gameID', '==', window.sessionStorage.getItem('gameID'))
                 .get()
                 .then(function(querySnapshot) {
@@ -414,132 +960,6 @@ class Game extends Component {
         }
     }
 
-    checkforWinner() {
-        let currentComponent = this;
-        
-        // horizontal win
-        if (this.state.boardSquare0 !== '' && this.state.boardSquare1 !== '' && this.state.boardSquare2 !== '' && this.state.boardSquare3) {
-            let boardSquareIDs = ['boardSquare0', 'boardSquare1', 'boardSquare2', 'boardSquare3'];
-            currentComponent.checkForPattern(boardSquareIDs);
-        } else if (this.state.boardSquare4 !== '' && this.state.boardSquare5 !== '' && this.state.boardSquare6 !== '' && this.state.boardSquare7 !== '') {
-            let boardSquareIDs = ['boardSquare4', 'boardSquare5', 'boardSquare6', 'boardSquare7'];
-            currentComponent.checkForPattern(boardSquareIDs);
-        } else if (this.state.boardSquare8 !== '' && this.state.boardSquare9 !== '' && this.state.boardSquare10 !== '' && this.state.boardSquare11 !== '' ) {
-            let boardSquareIDs = ['boardSquare8', 'boardSquare9', 'boardSquare10', 'boardSquare11'];
-            currentComponent.checkForPattern(boardSquareIDs);
-        } else if (this.state.boardSquare12 !== '' && this.state.boardSquare13 !== '' && this.state.boardSquare14 !== '' && this.state.boardSquare15 !== '') {
-            let boardSquareIDs = ['boardSquare12', 'boardSquare13', 'boardSquare14', 'boardSquare15'];
-            currentComponent.checkForPattern(boardSquareIDs);
-        }
-        // vertical win
-        else if (this.state.boardSquare0 !== '' && this.state.boardSquare4 !== '' && this.state.boardSquare8 !== '' && this.state.boardSquare12) {
-            let boardSquareIDs = ['boardSquare0', 'boardSquare4', 'boardSquare8', 'boardSquare12'];
-            currentComponent.checkForPattern(boardSquareIDs);
-        } else if (this.state.boardSquare1 !== '' && this.state.boardSquare5 !== '' && this.state.boardSquare9 !== '' && this.state.boardSquare13 !== '') {
-            let boardSquareIDs = ['boardSquare1', 'boardSquare5', 'boardSquare9', 'boardSquare13'];
-            currentComponent.checkForPattern(boardSquareIDs);
-        } else if (this.state.boardSquare2 !== '' && this.state.boardSquare6 !== '' && this.state.boardSquare10 !== '' && this.state.boardSquare14 !== '' ) {
-            let boardSquareIDs = ['boardSquare2', 'boardSquare6', 'boardSquare10', 'boardSquare14'];
-            currentComponent.checkForPattern(boardSquareIDs);
-        } else if (this.state.boardSquare3 !== '' && this.state.boardSquare7 !== '' && this.state.boardSquare11 !== '' && this.state.boardSquare15 !== '' ) {
-            let boardSquareIDs = ['boardSquare3', 'boardSquare7', 'boardSquare11', 'boardSquare15'];
-            currentComponent.checkForPattern(boardSquareIDs);
-        } 
-        // diagonal win
-        else if (this.state.boardSquare0 !== '' && this.state.boardSquare5 !== '' && this.state.boardSquare10 !== '' && this.state.boardSquare15) {
-            let boardSquareIDs = ['boardSquare0', 'boardSquare5', 'boardSquare10', 'boardSquare15'];
-            currentComponent.checkForPattern(boardSquareIDs);
-        } else if (this.state.boardSquare3 !== '' && this.state.boardSquare6 !== '' && this.state.boardSquare9 !== '' && this.state.boardSquare12 !== '') {
-            let boardSquareIDs = ['boardSquare3', 'boardSquare6', 'boardSquare9', 'boardSquare12'];
-            currentComponent.checkForPattern(boardSquareIDs);
-        }
-        // rectangular win
-        else if (this.state.boardSquare0 !== '' && this.state.boardSquare1 !== '' && this.state.boardSquare4 !== '' && this.state.boardSquare5) {
-            let boardSquareIDs = ['boardSquare0', 'boardSquare1', 'boardSquare4', 'boardSquare5'];
-            currentComponent.checkForPattern(boardSquareIDs);
-        } else if (this.state.boardSquare1 !== '' && this.state.boardSquare2 !== '' && this.state.boardSquare4 !== '' && this.state.boardSquare6 !== '') {
-            let boardSquareIDs = ['boardSquare1', 'boardSquare2', 'boardSquare4', 'boardSquare6'];
-            currentComponent.checkForPattern(boardSquareIDs);
-        } else if (this.state.boardSquare2 !== '' && this.state.boardSquare3 !== '' && this.state.boardSquare6 !== '' && this.state.boardSquare7 !== '') {
-            let boardSquareIDs = ['boardSquare2', 'boardSquare3', 'boardSquare6', 'boardSquare7'];
-            currentComponent.checkForPattern(boardSquareIDs);
-        } else if (this.state.boardSquare4 !== '' && this.state.boardSquare5 !== '' && this.state.boardSquare8 !== '' && this.state.boardSquare9 !== '') {
-            let boardSquareIDs = ['boardSquare4', 'boardSquare5', 'boardSquare8', 'boardSquare9'];
-            currentComponent.checkForPattern(boardSquareIDs);
-        } else if (this.state.boardSquare5 !== '' && this.state.boardSquare6 !== '' && this.state.boardSquare9 !== '' && this.state.boardSquare10 !== '') {
-            let boardSquareIDs = ['boardSquare5', 'boardSquare6', 'boardSquare9', 'boardSquare10'];
-            currentComponent.checkForPattern(boardSquareIDs);
-        } else if (this.state.boardSquare6 !== '' && this.state.boardSquare7 !== '' && this.state.boardSquare10 !== '' && this.state.boardSquare11 !== '') {
-            let boardSquareIDs = ['boardSquare6', 'boardSquare7', 'boardSquare10', 'boardSquare11'];
-            currentComponent.checkForPattern(boardSquareIDs);
-        } else if (this.state.boardSquare8 !== '' && this.state.boardSquare9 !== '' && this.state.boardSquare12 !== '' && this.state.boardSquare13 !== '') {
-            let boardSquareIDs = ['boardSquare8', 'boardSquare9', 'boardSquare12', 'boardSquare13'];
-            currentComponent.checkForPattern(boardSquareIDs);
-        } else if (this.state.boardSquare9 !== '' && this.state.boardSquare10 !== '' && this.state.boardSquare13 !== '' && this.state.boardSquare14 !== '') {
-            let boardSquareIDs = ['boardSquare9', 'boardSquare10', 'boardSquare13', 'boardSquare14'];
-            currentComponent.checkForPattern(boardSquareIDs);
-        } else if (this.state.boardSquare10 !== '' && this.state.boardSquare11 !== '' && this.state.boardSquare14 !== '' && this.state.boardSquare15 !== '') {
-            let boardSquareIDs = ['boardSquare10', 'boardSquare11', 'boardSquare14', 'boardSquare15'];
-            currentComponent.checkForPattern(boardSquareIDs);
-        }
-        // tie
-        if (this.state.boardSquare0 !== '' && this.state.boardSquare1 !== '' && this.state.boardSquare2 !== '' && this.state.boardSquare3 &&
-        this.state.boardSquare4 !== '' && this.state.boardSquare5 !== '' && this.state.boardSquare6 !== '' && this.state.boardSquare7 && 
-        this.state.boardSquare8 !== '' && this.state.boardSquare9 !== '' && this.state.boardSquare10 !== '' && this.state.boardSquare11 && 
-        this.state.boardSquare12 !== '' && this.state.boardSquare13 !== '' && this.state.boardSquare14 !== '' && this.state.boardSquare15) {
-            // let boardSquareIDs = ['boardSquare0', 'boardSquare1', 'boardSquare2', 'boardSquare3', 'boardSquare4',
-            // 'boardSquare5', 'boardSquare6', 'boardSquare7', 'boardSquare8', 'boardSquare9', 'boardSquare10',
-            // 'boardSquare11', 'boardSquare12', 'boardSquare13', 'boardSquare14', 'boardSquare15'];
-            let strText = '';
-            strText = 'It\'s a tie!';
-            currentComponent.handleShowModal(strText);
-
-        }
-    }
-
-    checkForPattern(boardSquareIDs) {
-        this._isPatternMounted = true;
-        let currentComponent = this;
-        let bWinning = false;
-        if (this._isPatternMounted) {
-
-            Object.keys(currentComponent.state).forEach(function(key, index) {
-                if (boardSquareIDs.includes(key)) {
-                    let chipRef = currentComponent.props.firebase.firestore.collection('chips').doc(currentComponent.state[key]);
-                    chipRef.get().then((doc) => {
-                        if (doc.exists) {
-                            currentComponent.setState({
-                                squaresValues: [...currentComponent.state.squaresValues, ...Array(1).fill(doc.data().attributes)]
-                            }, function() {
-                                if (currentComponent.state.squaresValues.length === 4) {
-                                    bWinning = isWinningPattern(currentComponent.state.squaresValues[0], currentComponent.state.squaresValues[1], currentComponent.state.squaresValues[2], currentComponent.state.squaresValues[3]);
-                                    if (bWinning) {
-                                        let strText;
-                                        if ((window.sessionStorage.getItem('ownerID') !== null && currentComponent.state.turn === 'owner') ||
-                                        (window.sessionStorage.getItem('userID') !== null && currentComponent.state.turn === 'user')) {
-                                            console.log("You win!");
-                                            strText = 'You win!';
-                                        } else {
-                                            console.log("You lose!");
-                                            strText = 'You lose!';
-                                        }
-                                        currentComponent.handleShowModal(strText);
-                                    }
-                                }
-                                this._isMounted = false;
-                            })
-                        } else {
-                            // doc.data() will be undefined in this case
-                            console.log("No such document!");
-                        }
-                    }).catch((error) => {
-                        console.log("Error getting document:", error);
-                    });
-                }
-            });
-        }
-        return bWinning;
-    }
 
     componentWillUnmount() {
         this._isMounted = false;

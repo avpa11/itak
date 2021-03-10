@@ -8,6 +8,9 @@ import Button from 'react-bootstrap/Button';
 import Row from 'react-bootstrap/Row';
 
 class Home extends Component {
+    componentDidMount() {
+        window.sessionStorage.clear();
+    }
 
     render() {
         return (
