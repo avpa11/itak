@@ -72,14 +72,17 @@ class Home extends Component {
                     <Form onSubmit={e => this.handleSubmit(e)}>
                         <Row className="formRow">
                             <Col md={12}>
-                                <Form.Label>Your Game Code: </Form.Label><br />
-                                <Form.Label id="gameID" name="gameID">{gameID}</Form.Label>
+                                <Form.Label>Tell you partner this game ID: </Form.Label><br />
+                                
                             </Col>
                         </Row>
                         <Row className="formRow">
-                            <Col md={12}>
-                                <Form.Label>Open Game: </Form.Label>
-                                <input onChange={this.handleChange} type="checkbox" name="openGame" />
+                            <Col md={5}>
+                                <Form.Label id="gameID" name="gameID" style={{backgroundColor: '#E8E8E8', padding: '5px 10px'}}>{gameID}</Form.Label>
+                            </Col>
+                            <Col md={7} style={{padding: '5px 0 5px'}}>
+                                <input onChange={this.handleChange} type="checkbox" name="openGame" style={{marginRight:  '10px'}} />
+                                <Form.Label>  Public Game: </Form.Label>
                             </Col>
                         </Row>
                         <Row className="formRow">
@@ -90,7 +93,7 @@ class Home extends Component {
                             </Col>
                             <Col md={6}>
                                 <div className="buttonWrapper">
-                                    <Button variant="warning" type="submit" className="buttonStyle">Continue</Button>
+                                    <Button variant="warning" type="submit" className="buttonStyle">Start game</Button>
                                 </div>
                             </Col>
                         </Row>

@@ -41,6 +41,8 @@ const initState = {
     chip15: '',
     chip16: '',
     actionText: '',
+    turnSpan: '',
+    turnSpanClass: '',
     activeChip: '',
     boardSquare0: '',
     boardSquare1: '',
@@ -280,7 +282,61 @@ class Game extends Component {
                 } else {
                     window.sessionStorage.setItem("userID", this.props.location.userID);
                 }
+            }
+            
+            if (this.props.location.previouspath === '/join-random') {
+                window.sessionStorage.setItem("previouspath", this.props.location.previouspath);
+                window.sessionStorage.setItem("userID", this.props.location.userID);
+            }
 
+            // random join
+            if (window.sessionStorage.getItem('previouspath') !== null && window.sessionStorage.getItem('previouspath')=== '/join-random'
+            && currentComponent.state.gameStarted === false && (window.sessionStorage.getItem('gameID') === null || window.sessionStorage.getItem('gameID') === undefined
+            || window.sessionStorage.getItem('gameID') === '')) {
+                let idForRandom;
+                this.props.firebase.gameRoom().where('gameStarted', '==', false).where('openGame', '==', true)
+                .limit(1)
+                .get()
+                .then(function(querySnapshot) {
+                    if (!querySnapshot.empty) {
+                        idForRandom = querySnapshot.docs[0].data().gameID;
+                        console.log(querySnapshot.docs[0].id);
+                        currentComponent.props.firebase.gameRoom().doc(querySnapshot.docs[0].id).update({
+                            'timestamp': Math.floor(Date.now() / 1000),
+                            'gameStarted': true,
+                            'userID':  window.sessionStorage.getItem('userID'),
+                            'step': 1,
+                            'stage': 'pick',
+                            'turn': 'owner',
+                            'chip1': 'avail',
+                            'chip2': 'avail',
+                            'chip3': 'avail',
+                            'chip4': 'avail',
+                            'chip5': 'avail',
+                            'chip6': 'avail',
+                            'chip7': 'avail',
+                            'chip8': 'avail',
+                            'chip9': 'avail',
+                            'chip10': 'avail',
+                            'chip11': 'avail',
+                            'chip12': 'avail',
+                            'chip13': 'avail',
+                            'chip14': 'avail',
+                            'chip15': 'avail',
+                            'chip16': 'avail',
+                        })
+                        .then(function() {
+                            console.log(idForRandom);
+                            window.sessionStorage.setItem('gameID', idForRandom);
+                            window.location.reload()
+                            // console.log("Document successfully updated!");
+                        })
+                        .catch(function(error) {
+                            // The document probably doesn't exist.
+                            console.error("Error updating document: ", error);
+                        });
+                    }
+                })
             }
 
             if (window.sessionStorage.getItem('gameID') !== null) {
@@ -344,17 +400,35 @@ class Game extends Component {
                         if (currentComponent.state.stage === "pick") {
                             if ((window.sessionStorage.getItem('ownerID') !== null && currentComponent.state.turn === 'owner') ||
                             (window.sessionStorage.getItem('userID') !== null && currentComponent.state.turn === 'user')) {
-                                currentComponent.setState({actionText: 'Choose a figure for your opponent'})
+                                currentComponent.setState({
+                                    actionText: 'Choose a figure for your opponent',
+                                    turnSpan: 'Your turn!',
+                                    turnSpanClass: 'yourT'
+                                })
+                                if (document.getElementById('turnSpan') !== null && document.getElementById('turnSpan') !== 'undefined') {
+                                    document.getElementById('turnSpan').style.background = '#7EDF9B';
+                                }
                             } else {
-                                currentComponent.setState({actionText: 'Your opponent\'s turn'})
+                                currentComponent.setState({
+                                    actionText: 'Your opponent\'s turn',
+                                    turnSpan: 'Wait!',
+                                    turnSpanClass: 'opponentT'
+                                })
                             }
                         } else {
                             if ((window.sessionStorage.getItem('ownerID') !== null && currentComponent.state.turn === 'owner') ||
                             (window.sessionStorage.getItem('userID') !== null && currentComponent.state.turn === 'user')) {
-                                currentComponent.setState({actionText: 'Choose where to place the highlighted figure!'})
+                                currentComponent.setState({
+                                    actionText: 'Choose where to place the highlighted figure!',
+                                    turnSpan: 'Your turn!',
+                                    turnSpanClass: 'yourT'
+                                })
                             } else {
-                                currentComponent.setState({actionText: 'Your opponent\'s turn'})
-                            }
+                                currentComponent.setState({
+                                    actionText: 'Your opponent\'s turn',
+                                    turnSpan: 'Wait!',
+                                    turnSpanClass: 'opponentT'
+                                })                            }
                         }
     
                         let chipID = '';
@@ -1018,18 +1092,19 @@ class Game extends Component {
 
     render() {
         const { gameID, gameStarted, history, chip1, chip2, chip3, chip4, chip5, chip6, chip7, chip8, chip9,
-        chip10, chip11, chip12, chip13, chip14, chip15, chip16, actionText, showModal, modalText } = this.state;
+        chip10, chip11, chip12, chip13, chip14, chip15, chip16, actionText, turnSpan, turnSpanClass, showModal, modalText } = this.state;
         const current = history[this.state.stepNumber];
         return (
             <React.Fragment>
                 <Container className="h-100" id="gameContainer">
                     <Row className="h-100">
                         <Col md="5">
-                            <h1>iTak game</h1>
+                            {/* <h1>iTak game</h1> */}
                             <React.Fragment>
-                                <h2>Game ID: {gameID}</h2>
+                                <h2 style={{paddingBottom: '10px', paddingTop: '10px'}}>Game ID: {gameID}</h2>
                             </React.Fragment>
-                                <p style={{fontSize: '20px'}}>{actionText}</p>
+                                <span id="turnSpan" className={turnSpanClass}>{turnSpan}</span>
+                                <p style={{fontSize: '20px', paddingTop: '20px'}}>{actionText}</p>
                             <React.Fragment>
                                 <div className="chips">
                                     <div>

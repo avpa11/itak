@@ -22,7 +22,7 @@ class Home extends Component {
                     <Row style={{padding: '15px'}}></Row>
                     <Button variant="warning" as={Link} to="/join-friend">Join Friend's Game</Button>
                     <Row style={{padding: '15px'}}></Row>
-                    <Button variant="warning">Join Random Game</Button>
+                    <Button variant="warning" as={Link} to="/join-random">Join Random Game</Button>
                 </main>
             </React.Fragment>
         )

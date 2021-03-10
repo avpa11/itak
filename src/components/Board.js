@@ -3,7 +3,7 @@ import Square from './Square';
 
 export default class Board extends Component {
     renderSquare(i) {
-        return <Square value={this.props.squares[i]} id={'boardSquare' + i}
+        return <Square value={this.props.squares[i+2]} id={'boardSquare' + i}
         onClick={()=>this.props.onClick(i)} />
     }
 

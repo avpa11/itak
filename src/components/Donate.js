@@ -12,8 +12,8 @@ function Donate() {
     const handleShow = () => setShow(true);
   
     return (
-      <>
-        <Button variant="warning" onClick={handleShow} style={{marginLeft: '25px'}}>
+      <div className="container">
+        <Button id="donateButton" variant="warning" onClick={handleShow}>
           Donate!
         </Button>
   
@@ -36,7 +36,7 @@ function Donate() {
             <Button variant="primary">Understood</Button>
           </Modal.Footer>
         </Modal>
-      </>
+      </div>
     );
   }
 

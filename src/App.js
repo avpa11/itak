@@ -9,6 +9,7 @@ import New from './components/New';
 import JoinFriend from './components/JoinFriend';
 import Game from './components/Game';
 import Donate from './components/Donate';
+import JoinRandom from './components/JoinRandom';
 
 class App extends Component {
 
@@ -20,6 +21,7 @@ class App extends Component {
         <Route exact path='/' component={Home} />       
         <Route exact path='/new' component={New} />       
         <Route exact path='/join-friend' component={JoinFriend} />       
+        <Route exact path='/join-random' component={JoinRandom} />       
         <Route exact path='/game' component={Game} />       
       </React.Fragment>
       <footer>

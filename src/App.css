@@ -6,6 +6,9 @@
 
 body {
   font-family: 'Lexend Mega', sans-serif;
+  background-size: 120%;
+  background-image: url('/src/images/background.jpg');
+  background-repeat: no-repeat;
 }
 
 button, .btn {
@@ -82,6 +85,8 @@ button, .btn {
   float: left;
   width: 120px;
   height: 120px;
+  background-color: #8C8A8A;
+  border: 1px solid #A1A1A1;
 }
 
 .border-row:after {
@@ -114,11 +119,12 @@ button, .btn {
  }
 
  .pendChoice {
-   border: 1px solid green;
+   border: 3px solid #7EDF9B;
+   border-radius: 3px;
  }
 
  .pendDecision {
-   border: 1px solid red;
+   border: 3px solid #FFA0A0;
  }
 
  .chip:focus {
@@ -153,4 +159,40 @@ button, .btn {
   .chipImg.small {
    width: 95% !important;
   }
+}
+
+#boardSquare0 {
+  border-radius: 15px 0 0 0;
+}
+
+#boardSquare3 {
+  border-radius: 0 15px 0 0 ;
+}
+
+#boardSquare12 {
+  border-radius: 0 0 0 15px;
+}
+
+#boardSquare15 {
+  border-radius: 0 0 15px 0;
+}
+
+#boardSquare12, #boardSquare13, #boardSquare14, #boardSquare15 {
+  box-shadow: 0 3px #7e7e7e;
+}
+
+#turnSpan, #donateButton {
+  padding: 7px 20px;
+  margin: 10px 0;
+  border-radius: 5px;
+  box-shadow: 0px 2px 5px #888888;
+  font-size: 20px;
+}
+
+.yourT {
+  background: #7EDF9B;
+}
+
+.opponentT {
+  background: #FFA0A0;
 }
