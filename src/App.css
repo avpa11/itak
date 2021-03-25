@@ -209,3 +209,8 @@ button, .btn {
 .opponentT {
   background: #FFA0A0;
 }
+
+.modal-dialog {
+  margin-left: 25px !important;
+  padding: 15px;
+}
