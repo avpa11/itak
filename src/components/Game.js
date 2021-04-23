@@ -171,75 +171,79 @@ class Game extends Component {
         let curElementID = 'boardSquare' + i;
         let curElement = document.getElementById(curElementID);
         
-        if (this.state.stage === 'put' && !curElement.classList.contains('reserved')) {
-            if ((window.sessionStorage.getItem('ownerID') !== null && this.state.turn === 'owner') ||
-            (window.sessionStorage.getItem('userID') !== null && this.state.turn === 'user')) {
-
-                if (this.state.activeChip !== undefined && this.state.activeChip !== '') {
-                    this.props.firebase.gameRoom().where('gameID', '==', window.sessionStorage.getItem('gameID'))
-                    .get()
-                    .then(function(querySnapshot) {
-                        querySnapshot.forEach(function(doc) {
-                            currentComponent.props.firebase.gameRoom().doc(doc.id).update({
-                                'timestamp': Math.floor(Date.now() / 1000),
-                                'boardSquare0': i === 0 ? currentComponent.state.activeChip : currentComponent.state.boardSquare0,
-                                'boardSquare1': i === 1 ? currentComponent.state.activeChip : currentComponent.state.boardSquare1,
-                                'boardSquare2': i === 2 ? currentComponent.state.activeChip : currentComponent.state.boardSquare2,
-                                'boardSquare3': i === 3 ? currentComponent.state.activeChip : currentComponent.state.boardSquare3,
-                                'boardSquare4': i === 4 ? currentComponent.state.activeChip : currentComponent.state.boardSquare4,
-                                'boardSquare5': i === 5 ? currentComponent.state.activeChip : currentComponent.state.boardSquare5,
-                                'boardSquare6': i === 6 ? currentComponent.state.activeChip : currentComponent.state.boardSquare6,
-                                'boardSquare7': i === 7 ? currentComponent.state.activeChip : currentComponent.state.boardSquare7,
-                                'boardSquare8': i === 8 ? currentComponent.state.activeChip : currentComponent.state.boardSquare8,
-                                'boardSquare9': i === 9 ? currentComponent.state.activeChip : currentComponent.state.boardSquare9,
-                                'boardSquare10': i === 10 ? currentComponent.state.activeChip : currentComponent.state.boardSquare10,
-                                'boardSquare11': i === 11 ? currentComponent.state.activeChip : currentComponent.state.boardSquare11,
-                                'boardSquare12': i === 12 ? currentComponent.state.activeChip : currentComponent.state.boardSquare12,
-                                'boardSquare13': i === 13 ? currentComponent.state.activeChip : currentComponent.state.boardSquare13,
-                                'boardSquare14': i === 14 ? currentComponent.state.activeChip : currentComponent.state.boardSquare14,
-                                'boardSquare15': i === 15 ? currentComponent.state.activeChip : currentComponent.state.boardSquare15,
-                                'chip1': currentComponent.state.activeChip === 'chip1' ?  i : currentComponent.state.chip1,
-                                'chip2': currentComponent.state.activeChip === 'chip2' ?  i : currentComponent.state.chip2,
-                                'chip3': currentComponent.state.activeChip === 'chip3' ?  i : currentComponent.state.chip3,
-                                'chip4': currentComponent.state.activeChip === 'chip4' ?  i : currentComponent.state.chip4,
-                                'chip5': currentComponent.state.activeChip === 'chip5' ?  i : currentComponent.state.chip5,
-                                'chip6': currentComponent.state.activeChip === 'chip6' ?  i : currentComponent.state.chip6,
-                                'chip7': currentComponent.state.activeChip === 'chip7' ?  i : currentComponent.state.chip7,
-                                'chip8': currentComponent.state.activeChip === 'chip8' ?  i : currentComponent.state.chip8,
-                                'chip9': currentComponent.state.activeChip === 'chip9' ?  i : currentComponent.state.chip9,
-                                'chip10': currentComponent.state.activeChip === 'chip10' ?  i : currentComponent.state.chip10,
-                                'chip11': currentComponent.state.activeChip === 'chip11' ?  i : currentComponent.state.chip11,
-                                'chip12': currentComponent.state.activeChip === 'chip12' ?  i : currentComponent.state.chip12,
-                                'chip13': currentComponent.state.activeChip === 'chip13' ?  i : currentComponent.state.chip13,
-                                'chip14': currentComponent.state.activeChip === 'chip14' ?  i : currentComponent.state.chip14,
-                                'chip15': currentComponent.state.activeChip === 'chip15' ?  i : currentComponent.state.chip15,
-                                'chip16': currentComponent.state.activeChip === 'chip16' ?  i : currentComponent.state.chip16,
-                                'step': nextStep,
-                                'stage': 'pick',
-                                'turn': currentComponent.state.turn
+        if (this.state.gameFinished !== true) {
+            if (this.state.stage === 'put' && !curElement.classList.contains('reserved')) {
+                if ((window.sessionStorage.getItem('ownerID') !== null && this.state.turn === 'owner') ||
+                (window.sessionStorage.getItem('userID') !== null && this.state.turn === 'user')) {
+    
+                    if (this.state.activeChip !== undefined && this.state.activeChip !== '') {
+                        this.props.firebase.gameRoom().where('gameID', '==', window.sessionStorage.getItem('gameID'))
+                        .get()
+                        .then(function(querySnapshot) {
+                            querySnapshot.forEach(function(doc) {
+                                currentComponent.props.firebase.gameRoom().doc(doc.id).update({
+                                    'timestamp': Math.floor(Date.now() / 1000),
+                                    'boardSquare0': i === 0 ? currentComponent.state.activeChip : currentComponent.state.boardSquare0,
+                                    'boardSquare1': i === 1 ? currentComponent.state.activeChip : currentComponent.state.boardSquare1,
+                                    'boardSquare2': i === 2 ? currentComponent.state.activeChip : currentComponent.state.boardSquare2,
+                                    'boardSquare3': i === 3 ? currentComponent.state.activeChip : currentComponent.state.boardSquare3,
+                                    'boardSquare4': i === 4 ? currentComponent.state.activeChip : currentComponent.state.boardSquare4,
+                                    'boardSquare5': i === 5 ? currentComponent.state.activeChip : currentComponent.state.boardSquare5,
+                                    'boardSquare6': i === 6 ? currentComponent.state.activeChip : currentComponent.state.boardSquare6,
+                                    'boardSquare7': i === 7 ? currentComponent.state.activeChip : currentComponent.state.boardSquare7,
+                                    'boardSquare8': i === 8 ? currentComponent.state.activeChip : currentComponent.state.boardSquare8,
+                                    'boardSquare9': i === 9 ? currentComponent.state.activeChip : currentComponent.state.boardSquare9,
+                                    'boardSquare10': i === 10 ? currentComponent.state.activeChip : currentComponent.state.boardSquare10,
+                                    'boardSquare11': i === 11 ? currentComponent.state.activeChip : currentComponent.state.boardSquare11,
+                                    'boardSquare12': i === 12 ? currentComponent.state.activeChip : currentComponent.state.boardSquare12,
+                                    'boardSquare13': i === 13 ? currentComponent.state.activeChip : currentComponent.state.boardSquare13,
+                                    'boardSquare14': i === 14 ? currentComponent.state.activeChip : currentComponent.state.boardSquare14,
+                                    'boardSquare15': i === 15 ? currentComponent.state.activeChip : currentComponent.state.boardSquare15,
+                                    'chip1': currentComponent.state.activeChip === 'chip1' ?  i : currentComponent.state.chip1,
+                                    'chip2': currentComponent.state.activeChip === 'chip2' ?  i : currentComponent.state.chip2,
+                                    'chip3': currentComponent.state.activeChip === 'chip3' ?  i : currentComponent.state.chip3,
+                                    'chip4': currentComponent.state.activeChip === 'chip4' ?  i : currentComponent.state.chip4,
+                                    'chip5': currentComponent.state.activeChip === 'chip5' ?  i : currentComponent.state.chip5,
+                                    'chip6': currentComponent.state.activeChip === 'chip6' ?  i : currentComponent.state.chip6,
+                                    'chip7': currentComponent.state.activeChip === 'chip7' ?  i : currentComponent.state.chip7,
+                                    'chip8': currentComponent.state.activeChip === 'chip8' ?  i : currentComponent.state.chip8,
+                                    'chip9': currentComponent.state.activeChip === 'chip9' ?  i : currentComponent.state.chip9,
+                                    'chip10': currentComponent.state.activeChip === 'chip10' ?  i : currentComponent.state.chip10,
+                                    'chip11': currentComponent.state.activeChip === 'chip11' ?  i : currentComponent.state.chip11,
+                                    'chip12': currentComponent.state.activeChip === 'chip12' ?  i : currentComponent.state.chip12,
+                                    'chip13': currentComponent.state.activeChip === 'chip13' ?  i : currentComponent.state.chip13,
+                                    'chip14': currentComponent.state.activeChip === 'chip14' ?  i : currentComponent.state.chip14,
+                                    'chip15': currentComponent.state.activeChip === 'chip15' ?  i : currentComponent.state.chip15,
+                                    'chip16': currentComponent.state.activeChip === 'chip16' ?  i : currentComponent.state.chip16,
+                                    'step': nextStep,
+                                    'stage': 'pick',
+                                    'turn': currentComponent.state.turn
+                                })
+                                .then(function() {
+                                    // console.log("Document successfully updated!");
+                                })
+                                .catch(function(error) {
+                                    // The document probably doesn't exist.
+                                    console.error("Error updating document: ", error);
+                                });
                             })
-                            .then(function() {
-                                // console.log("Document successfully updated!");
-                            })
-                            .catch(function(error) {
-                                // The document probably doesn't exist.
-                                console.error("Error updating document: ", error);
-                            });
                         })
-                    })
+                    }
+                } else {
+                    alert("Your opponent's turn to put a figure on the board")
+                }
+            } else if (this.state.stage === 'pick') {
+                if ((window.sessionStorage.getItem('ownerID') !== null && this.state.turn === 'owner') ||
+                (window.sessionStorage.getItem('userID') !== null && this.state.turn === 'user')) {
+                    alert("The turn is now to pick a chip");
+                } else {
+                    alert("The turn is now to pick a figure for your opponent");
                 }
             } else {
-                alert("Your opponent's turn to put a figure on the board")
-            }
-        } else if (this.state.stage === 'pick') {
-            if ((window.sessionStorage.getItem('ownerID') !== null && this.state.turn === 'owner') ||
-            (window.sessionStorage.getItem('userID') !== null && this.state.turn === 'user')) {
-                alert("The turn is now to pick a chip");
-            } else {
-                alert("The turn is now to pick a figure for your opponent");
+                alert("You cannot place a figure here!");
             }
         } else {
-            alert("You cannot place a figure here!");
+            alert('The game has ended \n ' + currentComponent.state.modalText);
         }
     }
 
@@ -251,13 +255,18 @@ class Game extends Component {
             let strText;
             if ((window.sessionStorage.getItem('ownerID') !== null && currentComponent.state.turn === 'owner') ||
             (window.sessionStorage.getItem('userID') !== null && currentComponent.state.turn === 'user')) {
-                console.log("You win!");
+                // console.log("You win!");
                 strText = 'You win!';
             } else {
-                console.log("You lose!");
+                // console.log("You lose!");
                 strText = 'You lose!';
             }
-            currentComponent.handleShowModal(strText);
+            currentComponent.setState({ 
+                modalText: strText
+            });
+            setTimeout(function() {
+                currentComponent.handleShowModal(strText);
+            }, 90000)            
             this.finishGame();
         }
     }
@@ -684,8 +693,22 @@ class Game extends Component {
                     && this.state.gameFinished === false) {
                         let strText;
                         strText = 'It\'s a tie';
-                        currentComponent.handleShowModal(strText);
                         this.finishGame();
+                        setTimeout(function() {
+                            currentComponent.handleShowModal(strText);
+                        }, 90000)
+                }
+
+                if (this.state.gameFinished === true) {
+                    if (this.state.modalText === '') {
+                        currentComponent.setState({
+                            modalText: 'It\'s a tie' 
+                        })
+                    }
+                    currentComponent.setState({
+                        actionText: 'Game finished',
+                        turnSpan: this.state.modalText
+                    })
                 }
             }
         })
@@ -695,6 +718,8 @@ class Game extends Component {
         this._isMounted = true;
 
         window.sessionStorage.setItem('gameStarted', false);
+
+        document.getElementById("homeButton").style.display = "block";
 
         if (this._isMounted) {
             let currentComponent = this;
@@ -834,35 +859,40 @@ class Game extends Component {
         let currentComponent = this;
         let nextStep = currentComponent.state.step + 1;
 
-        if ((currentComponent.state.turn === 'owner' && window.sessionStorage.getItem('ownerID') !== null && currentComponent.state.stage === 'pick')
-        || (currentComponent.state.turn === 'user' && window.sessionStorage.getItem('userID') !== null && currentComponent.state.stage === 'pick')) {
-            
-            this.props.firebase.gameRoom().where('gameID', '==', window.sessionStorage.getItem('gameID'))
-            .get()
-            .then(function(querySnapshot) {
-                querySnapshot.forEach(function(doc) {
-                    // Don't forget to check for non-available figures!!!
-                    currentComponent.props.firebase.gameRoom().doc(doc.id).update({
-                        'step':  nextStep,
-                        'stage': 'put',
-                        'turn': currentComponent.state.turn === 'owner' ? 'user' : 'owner',
-                        [e.target.name]: 'pend'
+        if (this.state.gameFinished !== true) {
+
+            if ((currentComponent.state.turn === 'owner' && window.sessionStorage.getItem('ownerID') !== null && currentComponent.state.stage === 'pick')
+            || (currentComponent.state.turn === 'user' && window.sessionStorage.getItem('userID') !== null && currentComponent.state.stage === 'pick')) {
+                
+                this.props.firebase.gameRoom().where('gameID', '==', window.sessionStorage.getItem('gameID'))
+                .get()
+                .then(function(querySnapshot) {
+                    querySnapshot.forEach(function(doc) {
+                        // Don't forget to check for non-available figures!!!
+                        currentComponent.props.firebase.gameRoom().doc(doc.id).update({
+                            'step':  nextStep,
+                            'stage': 'put',
+                            'turn': currentComponent.state.turn === 'owner' ? 'user' : 'owner',
+                            [e.target.name]: 'pend'
+                        })
+                        .then(function() {
+                            // console.log("Document successfully updated!");
+                        })
+                        .catch(function(error) {
+                            // The document probably doesn't exist.
+                            console.error("Error updating document: ", error);
+                        });
                     })
-                    .then(function() {
-                        // console.log("Document successfully updated!");
-                    })
-                    .catch(function(error) {
-                        // The document probably doesn't exist.
-                        console.error("Error updating document: ", error);
-                    });
                 })
-            })
-        } else if ((currentComponent.state.turn === 'owner' && window.sessionStorage.getItem('ownerID') !== null  && currentComponent.state.stage === 'put') ||
-        (currentComponent.state.turn === 'user' && window.sessionStorage.getItem('userID') !== null  && currentComponent.state.stage === 'put')) {
-            alert('Select a place on the board where to put the highlighted figure');
-        }
-        else {
-            alert('It\'s not your turn to pick the figure yet');
+            } else if ((currentComponent.state.turn === 'owner' && window.sessionStorage.getItem('ownerID') !== null  && currentComponent.state.stage === 'put') ||
+            (currentComponent.state.turn === 'user' && window.sessionStorage.getItem('userID') !== null  && currentComponent.state.stage === 'put')) {
+                alert('Select a place on the board where to put the highlighted figure');
+            }
+            else {
+                alert('It\'s not your turn to pick the figure yet');
+            }
+        } else {
+            alert('The game has ended \n ' + currentComponent.state.modalText);
         }
     }
 

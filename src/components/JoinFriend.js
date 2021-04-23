@@ -60,7 +60,7 @@ class JoinFriend extends Component {
                         <Row>
                             <Col md={12}>
                                 <Form.Label>Game Code</Form.Label>
-                                <FormControl type="text" value={gameID} onChange={this.handleChange} name="gameID" placeholder="Enter game code..."></FormControl>
+                                <FormControl type="text" value={gameID} onChange={this.handleChange} name="gameID" autocomplete="off" placeholder="Enter game code..."></FormControl>
                             </Col>
                         </Row>
                         <Row>

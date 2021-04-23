@@ -1,8 +1,11 @@
 import React, {useState} from 'react';
+import { Link, withRouter } from 'react-router-dom';
 
 //  Bootstrap components
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 
 
 function Donate() {
@@ -10,12 +13,23 @@ function Donate() {
   
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
+    
   
     return (
       <div className="container">
-        <Button id="donateButton" variant="warning" onClick={handleShow}>
-          Donate!
-        </Button>
+        <Row>
+          <Col md="6">
+            <Button id="donateButton" variant="warning" onClick={handleShow}>
+              Donate!
+            </Button>
+          </Col>
+          <Col md="6">
+            <Button id="homeButton" variant="warning" className="float-right" as={Link} style={{display: "none"}} to="/">
+              Home
+            </Button>
+          </Col>
+        </Row>
+
   
         <Modal
           show={show}
@@ -40,4 +54,4 @@ function Donate() {
     );
   }
 
-export default Donate;
+export default withRouter(Donate);
